@@ -1,5 +1,10 @@
-import requests
+import os
 import json
+import requests
+
+# import the token
+with open("discogs-token.txt") as f:
+    discogs_token = f.readline().strip()
 
 
 def call_discogs(url):
@@ -12,15 +17,40 @@ def call_discogs(url):
     return r.json()
 
 
-# import the token
-with open("discogs-token.txt") as f:
-    discogs_token = f.readline().strip()
+def make_release_string(release):
+    title = release["basic_information"]["title"]
+    artist = release["basic_information"]["artists"][0]["name"]
+    label = release["basic_information"]["labels"][0]["name"]
+    catno = release["basic_information"]["labels"][0]["catno"]
+    year = release["basic_information"]["year"]
+    release_string = f"{artist} - {title} [{label}] -- {catno}, {year}"
+    return release_string
 
-# call collection by folder
-url = "https://api.discogs.com/users/tkell/collection/folders"
-# /users/{username}/collection/folders/{folder_id}/releases
-collection = call_discogs(url)
-for folder in collection["folders"]:
-    if folder["id"] == 0:
-        url = folder["resource_url"] + "/releases"
-        print(call_discogs(url))
+
+def make_markdown_block(folder_name, release_strings):
+    title = f"#{folder_name}"
+    items = "\n".join(release_strings)
+    return title + "\n" + items + "\n\n"
+
+
+if __name__ == "__main__":
+    output_file = "collection.md"
+    os.remove(output_file)
+
+    # call collection by folder
+    url = "https://api.discogs.com/users/tkell/collection/folders"
+    collection = call_discogs(url)
+
+    # make and write strings
+    for folder in collection["folders"]:
+        if folder["name"] not in ["All", "Uncategorized"]:
+            url = folder["resource_url"] + "/releases?per_page=100"
+            folder_name = folder["name"].replace('""', "")
+            folder_data = call_discogs(url)
+            releases = folder_data["releases"]
+
+            release_strings = []
+            for release in releases:
+                release_strings.append(make_release_string(release))
+            with open(output_file, "a") as f:
+                f.write(make_markdown_block(folder_name, release_strings))
