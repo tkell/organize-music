@@ -34,8 +34,11 @@ def make_markdown_block(folder_name, release_strings):
 
 
 if __name__ == "__main__":
-    output_file = "collection.md"
-    os.remove(output_file)
+    output_file = "vinyl.md"
+    try:
+        os.remove(output_file)
+    except FileNotFoundError:
+        pass
 
     # call collection by folder
     url = "https://api.discogs.com/users/tkell/collection/folders"
