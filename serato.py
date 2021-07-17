@@ -2,7 +2,6 @@ import os
 import re
 import scratchlivedb
 
-db = scratchlivedb.ScratchDatabase("serato-db/database V2")
 
 label_matcher = r"\[(.*)\]"
 album_matcher = r"\/Albums\/.+? - (.+?)[ \[]"
@@ -57,6 +56,7 @@ if __name__ == "__main__":
         pass
 
     track_strings = []
+    db = scratchlivedb.ScratchDatabase("serato-db/database V2")
     for entry in db.entries:
         track_strings.append(make_track_string(entry))
     with open(output_file, "a") as f:
