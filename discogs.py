@@ -96,6 +96,17 @@ def get_folder_name_and_releases(folder):
     return name, releases
 
 
+def create_markdown_for_release(release):
+    release_strings = []
+    release_strings.append(make_release_string(release))
+    release_url = release["basic_information"]["resource_url"]
+    release_data = call_discogs(release_url)
+    tracks = release_data["tracklist"]
+    for track in tracks:
+        release_strings.append(make_track_string(track))
+    return "\n".join(release_strings)
+
+
 if __name__ == "__main__":
     output_file = "vinyl.md"
     output_json = "vinyl.json"
@@ -114,15 +125,7 @@ if __name__ == "__main__":
     for folder in collection["folders"]:
         if folder["name"] not in ["All", "Uncategorized"]:
             folder_name, releases = get_folder_name_and_releases(folder)
-
-            markdown_strings = []
-            for release in releases:
-                markdown_strings.append(make_release_string(release))
-                release_url = release["basic_information"]["resource_url"]
-                release_data = call_discogs(release_url)
-                tracks = release_data["tracklist"]
-                for track in tracks:
-                    markdown_strings.append(make_track_string(track))
+            markdown_strings = [create_markdown_for_release(r) for r in releases]
             all_markdown_strings.append(
                 make_markdown_block(folder_name, markdown_strings)
             )
