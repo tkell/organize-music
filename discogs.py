@@ -33,6 +33,10 @@ def make_markdown_block(folder_name, release_strings):
     return title + "\n" + items + "\n\n"
 
 
+def make_track_string(track):
+    return f"  {track['position']} - {track['title']} - {track['duration']}"
+
+
 if __name__ == "__main__":
     output_file = "vinyl.md"
     try:
@@ -52,18 +56,16 @@ if __name__ == "__main__":
             folder_data = call_discogs(url)
             releases = folder_data["releases"]
 
-            release_strings = []
+            markdown_strings = []
             for release in releases:
                 # call discogs for release
                 release_url = release["basic_information"]["resource_url"]
                 release_data = call_discogs(release_url)
-                release_strings.append(make_release_string(release))
+                markdown_strings.append(make_release_string(release))
                 tracks = release_data["tracklist"]
                 for track in tracks:
-                    track_string = f"  {track['position']} - {track['title']} - {track['duration']}"
-                    release_strings.append(track_string)  # _hmmmm_
+                    markdown_strings.append(make_track_string(track))
                 break  ## debug
-            print(release_strings)
             with open(output_file, "a") as f:
-                f.write(make_markdown_block(folder_name, release_strings))
+                f.write(make_markdown_block(folder_name, markdown_strings))
             break  ## debug
