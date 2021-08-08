@@ -26,6 +26,16 @@ def get_cache_expiry():
     return 60 * 60 * 24 * days
 
 
+def call_discogs_no_cache(url):
+    headers = {
+        "user-agent": "DiscogsOrganize +http://tide-pool.ca",
+        "Authorization": f"Discogs token={discogs_token}",
+    }
+    r = requests.get(url, headers=headers)
+    print("calling: ", url)
+    return r.json()
+
+
 def call_discogs(url):
     now = int(time.time())
     if discogs_cache.get(url):
@@ -93,7 +103,7 @@ if __name__ == "__main__":
 
     # call collection by folder
     url = "https://api.discogs.com/users/tkell/collection/folders"
-    collection = call_discogs(url)
+    collection = call_discogs_no_cache(url)
 
     # make and write strings
     all_json_data = []
@@ -101,14 +111,14 @@ if __name__ == "__main__":
         if folder["name"] not in ["All", "Uncategorized"]:
             url = folder["resource_url"] + "/releases?per_page=100"
             folder_name = folder["name"].replace('""', "")
-            folder_data = call_discogs(url)
+            folder_data = call_discogs_no_cache(url)
             releases = folder_data["releases"]
 
             markdown_strings = []
             for release in releases:
-                release_data = call_discogs(release_url)
                 markdown_strings.append(make_release_string(release))
                 release_url = release["basic_information"]["resource_url"]
+                release_data = call_discogs(release_url)
                 tracks = release_data["tracklist"]
                 for track in tracks:
                     markdown_strings.append(make_track_string(track))
