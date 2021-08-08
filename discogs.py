@@ -96,7 +96,7 @@ if __name__ == "__main__":
     collection = call_discogs(url)
 
     # make and write strings
-    json_data = []
+    all_json_data = []
     for folder in collection["folders"]:
         if folder["name"] not in ["All", "Uncategorized"]:
             url = folder["resource_url"] + "/releases?per_page=100"
@@ -109,18 +109,24 @@ if __name__ == "__main__":
                 release_url = release["basic_information"]["resource_url"]
                 release_data = call_discogs(release_url)
                 markdown_strings.append(make_release_string(release))
+                tracks = release_data["tracklist"]
+                for track in tracks:
+                    markdown_strings.append(make_track_string(track))
+            with open(output_file, "a") as f:
+                f.write(make_markdown_block(folder_name, markdown_strings))
+
+            for release in releases:
+                release_url = release["basic_information"]["resource_url"]
+                release_data = call_discogs(release_url)
                 json_entry = make_release_json(release, folder_name)
                 tracks = release_data["tracklist"]
                 track_json = []
                 for track in tracks:
-                    markdown_strings.append(make_track_string(track))
                     track_json.append(make_track_json(track))
                 json_entry["tracks"] = track_json
-                json_data.append(json_entry)
-            with open(output_file, "a") as f:
-                f.write(make_markdown_block(folder_name, markdown_strings))
+                all_json_data.append(json_entry)
     with open(output_json, "w") as f:
-        json.dump(json_data, f)
+        json.dump(all_json_data, f)
 
     with open(cache_filename, "wb") as f:
         pickle.dump(discogs_cache, f)
