@@ -54,6 +54,17 @@ def make_release_string(release):
     return release_string
 
 
+def make_release_json(release, folder_name):
+    return {
+        "title": release["basic_information"]["title"],
+        "artist": release["basic_information"]["artists"][0]["name"],
+        "label": release["basic_information"]["labels"][0]["name"],
+        "catno": release["basic_information"]["labels"][0]["catno"],
+        "year": release["basic_information"]["year"],
+        "folder": folder_name,
+    }
+
+
 def make_markdown_block(folder_name, release_strings):
     title = f"#{folder_name}"
     items = "\n".join(release_strings)
@@ -64,8 +75,17 @@ def make_track_string(track):
     return f"  {track['position']} - {track['title']} - {track['duration']}"
 
 
+def make_track_json(track):
+    return {
+        "position": track["position"],
+        "title": track["title"],
+        "duration": track["duration"],
+    }
+
+
 if __name__ == "__main__":
     output_file = "vinyl.md"
+    output_json = "vinyl.json"
     try:
         os.remove(output_file)
     except FileNotFoundError:
@@ -76,6 +96,7 @@ if __name__ == "__main__":
     collection = call_discogs(url)
 
     # make and write strings
+    json_data = []
     for folder in collection["folders"]:
         if folder["name"] not in ["All", "Uncategorized"]:
             url = folder["resource_url"] + "/releases?per_page=100"
@@ -88,11 +109,18 @@ if __name__ == "__main__":
                 release_url = release["basic_information"]["resource_url"]
                 release_data = call_discogs(release_url)
                 markdown_strings.append(make_release_string(release))
+                json_entry = make_release_json(release, folder_name)
                 tracks = release_data["tracklist"]
+                track_json = []
                 for track in tracks:
                     markdown_strings.append(make_track_string(track))
+                    track_json.append(make_track_json(track))
+                json_entry["tracks"] = track_json
+                json_data.append(json_entry)
             with open(output_file, "a") as f:
                 f.write(make_markdown_block(folder_name, markdown_strings))
+    with open(output_json, "w") as f:
+        json.dump(json_data, f)
 
     with open(cache_filename, "wb") as f:
         pickle.dump(discogs_cache, f)
