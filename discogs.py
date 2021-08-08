@@ -70,7 +70,7 @@ def make_release_json(release, folder_name):
     }
 
 
-def make_markdown_block(folder_name, release_strings):
+def markdown_block(folder_name, release_strings):
     title = f"#{folder_name}"
     items = "\n".join(release_strings)
     return title + "\n" + items + "\n\n"
@@ -126,9 +126,7 @@ if __name__ == "__main__":
         if folder["name"] not in ["All", "Uncategorized"]:
             folder_name, releases = get_folder_name_and_releases(folder)
             markdown_strings = [create_markdown_for_release(r) for r in releases]
-            all_markdown_strings.append(
-                make_markdown_block(folder_name, markdown_strings)
-            )
+            all_markdown_strings.append(markdown_block(folder_name, markdown_strings))
 
             for release in releases:
                 release_url = release["basic_information"]["resource_url"]
