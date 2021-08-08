@@ -88,6 +88,14 @@ def make_track_json(track):
     }
 
 
+def get_folder_name_and_releases(folder):
+    url = folder["resource_url"] + "/releases?per_page=100"
+    name = folder["name"].replace('""', "")
+    folder_data = call_discogs_no_cache(url)
+    releases = folder_data["releases"]
+    return name, releases
+
+
 if __name__ == "__main__":
     output_file = "vinyl.md"
     output_json = "vinyl.json"
@@ -104,10 +112,7 @@ if __name__ == "__main__":
     all_json_data = []
     for folder in collection["folders"]:
         if folder["name"] not in ["All", "Uncategorized"]:
-            url = folder["resource_url"] + "/releases?per_page=100"
-            folder_name = folder["name"].replace('""', "")
-            folder_data = call_discogs_no_cache(url)
-            releases = folder_data["releases"]
+            folder_name, releases = get_folder_name_and_releases(folder)
 
             markdown_strings = []
             for release in releases:
