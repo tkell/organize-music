@@ -1,6 +1,7 @@
 import os
 import json
 import pickle
+import time
 import requests
 
 # import the token
@@ -21,7 +22,7 @@ except Exception:
 def call_discogs(url):
     if discogs_cache.get(url):
         print("cache hit for: ", url)
-        return discogs_cache[url]
+        return discogs_cache[url][0]
     headers = {
         "user-agent": "DiscogsOrganize +http://tide-pool.ca",
         "Authorization": f"Discogs token={discogs_token}",
@@ -29,8 +30,9 @@ def call_discogs(url):
     r = requests.get(url, headers=headers)
     print("calling: ", url)
     ## add to cache
-    discogs_cache[url] = r.json()
-    return discogs_cache[url]
+    now = int(time.time())
+    discogs_cache[url] = (r.json(), now)
+    return discogs_cache[url][0]
 
 
 def make_release_string(release):
