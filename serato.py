@@ -14,7 +14,7 @@ def make_track_string(entry):
     bpm = entry.trackbpm
     length = entry.tracklength
     timestamp_added = entry.trackadded
-    label = get_label_from(entry.filebase)
+    label = get_label(entry)
     if is_album_folder(entry.filebase):
         album = get_album_from(entry.filebase)
     return f"{artist} - {title} [{label}] -- {length}"
@@ -25,8 +25,10 @@ def make_markdown_block(track_strings):
     return "\n" + items + "\n\n"
 
 
-def get_label_from(filebase):
-    m = re.search(label_matcher, filebase)
+def get_label(entry):
+    if entry.tracklabel:
+        return entry.tracklabel
+    m = re.search(label_matcher, entry.filebase)
     if not m:
         return ""
     return m.group(1)
