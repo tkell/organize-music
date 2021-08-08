@@ -1,20 +1,36 @@
 import os
 import json
+import pickle
 import requests
 
 # import the token
 with open("discogs-token.txt") as f:
     discogs_token = f.readline().strip()
 
+# load the cache
+cache_filename = "discogs-cache.pkl"
+try:
+    with open(cache_filename, "rb") as f:
+        discogs_cache = pickle.load(f)
+except Exception:
+    with open(cache_filename, "wb") as f:
+        pickle.dump({}, f)
+        discogs_cache = {}
+
 
 def call_discogs(url):
+    if discogs_cache.get(url):
+        print("cache hit for: ", url)
+        return discogs_cache[url]
     headers = {
         "user-agent": "DiscogsOrganize +http://tide-pool.ca",
         "Authorization": f"Discogs token={discogs_token}",
     }
     r = requests.get(url, headers=headers)
     print("calling: ", url)
-    return r.json()
+    ## add to cache
+    discogs_cache[url] = r.json()
+    return discogs_cache[url]
 
 
 def make_release_string(release):
@@ -69,3 +85,6 @@ if __name__ == "__main__":
             with open(output_file, "a") as f:
                 f.write(make_markdown_block(folder_name, markdown_strings))
             break  ## debug
+
+    with open(cache_filename, "wb") as f:
+        pickle.dump(discogs_cache, f)
