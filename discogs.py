@@ -44,13 +44,8 @@ def call_discogs(url):
         if now - timestamp < cache_expiry_seconds:
             print("cache hit: ", url)
             return cached_data
-    headers = {
-        "user-agent": "DiscogsOrganize +http://tide-pool.ca",
-        "Authorization": f"Discogs token={discogs_token}",
-    }
-    r = requests.get(url, headers=headers)
-    print("calling: ", url)
-    discogs_cache[url] = (r.json(), now)
+    json_data = call_discogs_no_cache(url)
+    discogs_cache[url] = (json_data, now)
     return discogs_cache[url][0]
 
 
