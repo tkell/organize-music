@@ -1,4 +1,6 @@
 discogs-token.txt
+discogs-cache.pkl
 notes.txt
-.*
 serato-db
+*.md
+.*
