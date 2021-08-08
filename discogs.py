@@ -106,9 +106,9 @@ if __name__ == "__main__":
 
             markdown_strings = []
             for release in releases:
-                release_url = release["basic_information"]["resource_url"]
                 release_data = call_discogs(release_url)
                 markdown_strings.append(make_release_string(release))
+                release_url = release["basic_information"]["resource_url"]
                 tracks = release_data["tracklist"]
                 for track in tracks:
                     markdown_strings.append(make_track_string(track))
