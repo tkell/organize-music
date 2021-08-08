@@ -119,10 +119,9 @@ if __name__ == "__main__":
                 release_url = release["basic_information"]["resource_url"]
                 release_data = call_discogs(release_url)
                 json_entry = make_release_json(release, folder_name)
-                tracks = release_data["tracklist"]
-                track_json = []
-                for track in tracks:
-                    track_json.append(make_track_json(track))
+                track_json = [
+                    make_track_json(track) for track in release_data["tracklist"]
+                ]
                 json_entry["tracks"] = track_json
                 all_json_data.append(json_entry)
     with open(output_json, "w") as f:
