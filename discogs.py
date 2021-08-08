@@ -110,6 +110,7 @@ if __name__ == "__main__":
 
     # make and write strings
     all_json_data = []
+    all_markdown_strings = []
     for folder in collection["folders"]:
         if folder["name"] not in ["All", "Uncategorized"]:
             folder_name, releases = get_folder_name_and_releases(folder)
@@ -122,8 +123,9 @@ if __name__ == "__main__":
                 tracks = release_data["tracklist"]
                 for track in tracks:
                     markdown_strings.append(make_track_string(track))
-            with open(output_file, "a") as f:
-                f.write(make_markdown_block(folder_name, markdown_strings))
+            all_markdown_strings.append(
+                make_markdown_block(folder_name, markdown_strings)
+            )
 
             for release in releases:
                 release_url = release["basic_information"]["resource_url"]
@@ -134,8 +136,10 @@ if __name__ == "__main__":
                 ]
                 json_entry["tracks"] = track_json
                 all_json_data.append(json_entry)
+
+    with open(output_file, "w") as f:
+        f.write("\n".join(all_markdown_strings))
     with open(output_json, "w") as f:
         json.dump(all_json_data, f)
-
     with open(cache_filename, "wb") as f:
         pickle.dump(discogs_cache, f)
