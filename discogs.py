@@ -2,6 +2,7 @@ import os
 import json
 import pickle
 import time
+import random
 import requests
 
 # import the token
@@ -18,19 +19,27 @@ except Exception:
         pickle.dump({}, f)
         discogs_cache = {}
 
+# cache for 14 to 56 days
+# this jitter at runtime is so we don't just re-hammer discogs
+def get_cache_expiry():
+    days = random.randint(14, 56)
+    return 60 * 60 * 24 * days
+
 
 def call_discogs(url):
+    now = int(time.time())
     if discogs_cache.get(url):
-        print("cache hit for: ", url)
-        return discogs_cache[url][0]
+        cached_data, timestamp = discogs_cache[url]
+        cache_expiry_seconds = get_cache_expiry()
+        if now - timestamp < cache_expiry_seconds:
+            print("cache hit: ", url)
+            return cached_data
     headers = {
         "user-agent": "DiscogsOrganize +http://tide-pool.ca",
         "Authorization": f"Discogs token={discogs_token}",
     }
     r = requests.get(url, headers=headers)
     print("calling: ", url)
-    ## add to cache
-    now = int(time.time())
     discogs_cache[url] = (r.json(), now)
     return discogs_cache[url][0]
 
@@ -76,17 +85,14 @@ if __name__ == "__main__":
 
             markdown_strings = []
             for release in releases:
-                # call discogs for release
                 release_url = release["basic_information"]["resource_url"]
                 release_data = call_discogs(release_url)
                 markdown_strings.append(make_release_string(release))
                 tracks = release_data["tracklist"]
                 for track in tracks:
                     markdown_strings.append(make_track_string(track))
-                break  ## debug
             with open(output_file, "a") as f:
                 f.write(make_markdown_block(folder_name, markdown_strings))
-            break  ## debug
 
     with open(cache_filename, "wb") as f:
         pickle.dump(discogs_cache, f)
