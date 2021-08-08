@@ -48,16 +48,19 @@ def is_album_folder(filebase):
         return False
 
 
+def make_markdown_file(serato_database, output_filename):
+    track_strings = []
+    for entry in serato_database.entries:
+        track_strings.append(make_track_string(entry))
+    with open(output_filename, "a") as f:
+        f.write(make_markdown_block(track_strings))
+
+
 if __name__ == "__main__":
-    output_file = "digital.md"
+    output_filename = "digital.md"
     try:
-        os.remove(output_file)
+        os.remove(output_filename)
     except FileNotFoundError:
         pass
-
-    track_strings = []
     db = scratchlivedb.ScratchDatabase("serato-db/database V2")
-    for entry in db.entries:
-        track_strings.append(make_track_string(entry))
-    with open(output_file, "a") as f:
-        f.write(make_markdown_block(track_strings))
+    make_markdown_file(db, output_filename)
