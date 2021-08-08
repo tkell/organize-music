@@ -3,4 +3,5 @@ discogs-cache.pkl
 notes.txt
 serato-db
 *.md
+*.json
 .*

@@ -1,4 +1,5 @@
 import os
+import json
 import re
 import scratchlivedb
 
@@ -11,13 +12,20 @@ simple_album_matcher = r"\/Albums\/(.+?)"
 def make_track_string(entry):
     artist = entry.trackartist
     title = entry.tracktitle
-    bpm = entry.trackbpm
     length = entry.tracklength
-    timestamp_added = entry.trackadded
     label = get_label(entry)
-    if is_album_folder(entry.filebase):
-        album = get_album_from(entry.filebase)
     return f"{artist} - {title} [{label}] -- {length}"
+
+
+def make_json_dict(entry):
+    return {
+        "artist": entry.trackartist,
+        "track": entry.tracktitle,
+        "bpm": entry.trackbpm,
+        "length": entry.tracklength,
+        "timestamp_added": entry.trackadded,
+        "label": get_label(entry),
+    }
 
 
 def make_markdown_block(track_strings):
@@ -34,6 +42,7 @@ def get_label(entry):
     return m.group(1)
 
 
+## Not currently used, but will need to add "albumness" later
 def get_album_from(filebase):
     m = re.search(album_matcher, filebase)
     if not m:
@@ -56,12 +65,26 @@ def make_markdown_file(serato_database, output_filename):
     except FileNotFoundError:
         pass
     track_strings = []
+    json_data = []
     for entry in serato_database.entries:
         track_strings.append(make_track_string(entry))
     with open(output_filename, "a") as f:
         f.write(make_markdown_block(track_strings))
 
 
+def make_json_file(serato_database, output_filename):
+    try:
+        os.remove(output_filename)
+    except FileNotFoundError:
+        pass
+    json_data = []
+    for entry in serato_database.entries:
+        json_data.append(make_json_dict(entry))
+    with open(output_filename, "w") as f:
+        json.dump(json_data, f)
+
+
 if __name__ == "__main__":
     db = scratchlivedb.ScratchDatabase("serato-db/database V2")
     make_markdown_file(db, "digital.md")
+    make_json_file(db, "digital.json")
