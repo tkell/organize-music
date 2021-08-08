@@ -64,10 +64,7 @@ def make_markdown_file(serato_database, output_filename):
         os.remove(output_filename)
     except FileNotFoundError:
         pass
-    track_strings = []
-    json_data = []
-    for entry in serato_database.entries:
-        track_strings.append(make_track_string(entry))
+    track_strings = [make_track_string(entry) for entry in serato_database.entries]
     with open(output_filename, "a") as f:
         f.write(make_markdown_block(track_strings))
 
@@ -77,9 +74,7 @@ def make_json_file(serato_database, output_filename):
         os.remove(output_filename)
     except FileNotFoundError:
         pass
-    json_data = []
-    for entry in serato_database.entries:
-        json_data.append(make_json_dict(entry))
+    json_data = [make_json_dict(entry) for entry in serato_database.entries]
     with open(output_filename, "w") as f:
         json.dump(json_data, f)
 
