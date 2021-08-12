@@ -5,6 +5,7 @@ import shutil
 import mutagen
 import requests
 
+label_matcher = r"\[(.*)\]"
 # import the token
 with open("discogs-token.txt") as f:
     discogs_token = f.readline().strip()
@@ -34,9 +35,6 @@ def get_tags(filepath, tag_name):
         return None
 
 
-label_matcher = r"\[(.*)\]"
-
-
 def get_label_from(filebase):
     m = re.search(label_matcher, filebase)
     if not m:
@@ -44,9 +42,26 @@ def get_label_from(filebase):
     return m.group(1)
 
 
-def old_stuff():
-    ## update tags – we'll move the files later, in another sweep!
-    set_tag(filepath, "Publisher", label)
+def copy_tag_to_filename(extension, filename, directory):
+    if extension in filename:
+        if not get_label_from(filename):
+            filepath = f"{directory}/{filename}"
+            if extension == ".flac":
+                label = get_tags(filepath, "Publisher")
+                if not label:
+                    print("PANIC", filepath)
+                    return
+            elif extension == ".mp3":
+                print("oh no, need to get the mp3 tag reader in")
+            new_filename = filename.replace(extension, "") + f" [{label}]" + extension
+            new_filepath = f"{directory}/{new_filename}"
+            print(filepath)
+            print(new_filepath)
+            # shutil.move(filepath, new_filepath)
+
+
+def remove_empty_label(filename):
+    return filename.replace("[]", "").strip()
 
 
 if __name__ == "__main__":
@@ -54,25 +69,20 @@ if __name__ == "__main__":
     parser.add_argument("--dir")
     parser.add_argument("--file_type")
     args = parser.parse_args()
-    extension = f".{args.file_type}"
-
-    # OK, need to get mp3s working, and need to get something that works for directories
-    # Albums look pretty good, tbh?
-    for filename in os.listdir(args.dir):
-        if extension in filename:
-            if not get_label_from(filename):
-                filepath = f"{args.dir}/{filename}"
-                if extension == ".flac":
-                    label = get_tags(filepath, "Publisher")
-                    if not label:
-                        print("PANIC", filepath)
-                        break
-                elif extension == ".mp3":
-                    print("oh no, need to get the mp3 tag reader in")
-                new_filename = (
-                    filename.replace(extension, "") + f" [{label}]" + extension
-                )
-                new_filepath = f"{args.dir}/{new_filename}"
-                print(filepath)
-                print(new_filepath)
-                shutil.move(filepath, new_filepath)
+    if args.file_type != "folder":
+        extension = f".{args.file_type}"
+        for filename in os.listdir(args.dir):
+            copy_tag_to_filename(extension, filename, args.dir)
+    elif args.file_type == "folder":
+        for filename in os.listdir(args.dir):
+            filepath = f"{args.dir}/{filename}"
+            if os.path.isdir(filepath):
+                if not get_label_from(filepath):
+                    print(filepath)
+                    print("Enter Label!")
+                    label = input().strip()
+                    new_filename = remove_empty_label(filename) + f" [{label}]"
+                    new_filepath = f"{args.dir}/{new_filename}"
+                    print(filepath)
+                    print(new_filepath)
+                    # shutil.move(filepath, new_filepath)
