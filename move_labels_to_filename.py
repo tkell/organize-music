@@ -3,6 +3,7 @@ import os
 import re
 import shutil
 import mutagen
+from mutagen.id3 import ID3, TPUB, TYER
 import requests
 
 label_matcher = r"\[(.*)\]"
@@ -35,11 +36,27 @@ def get_tags(filepath, tag_name):
         return None
 
 
+def get_tags_mp3(filepath, tag_name):
+    tags = ID3(filepath)
+    try:
+        if tag_name == "Year":
+            return tags["TDRC"].text[0]
+        if tag_name == "Publisher":
+            return tags["TPUB"].text[0]
+    except KeyError:
+        return None
+    return None
+
+
 def get_label_from(filebase):
     m = re.search(label_matcher, filebase)
     if not m:
         return ""
     return m.group(1)
+
+
+def remove_empty_label(filename):
+    return filename.replace(" []", "")
 
 
 def copy_tag_to_filename(extension, filename, directory):
@@ -52,16 +69,18 @@ def copy_tag_to_filename(extension, filename, directory):
                     print("PANIC", filepath)
                     return
             elif extension == ".mp3":
-                print("oh no, need to get the mp3 tag reader in")
-            new_filename = filename.replace(extension, "") + f" [{label}]" + extension
+                label = get_tags_mp3(filepath, "Publisher")
+                if not label:
+                    print("PANIC", filepath)
+                    return
+            cleaned_filename = remove_empty_label(filename)
+            new_filename = (
+                cleaned_filename.replace(extension, "") + f" [{label}]" + extension
+            )
             new_filepath = f"{directory}/{new_filename}"
             print(filepath)
             print(new_filepath)
             # shutil.move(filepath, new_filepath)
-
-
-def remove_empty_label(filename):
-    return filename.replace("[]", "").strip()
 
 
 if __name__ == "__main__":
