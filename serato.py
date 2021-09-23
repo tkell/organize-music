@@ -33,9 +33,8 @@ def make_markdown_block(track_strings):
     return "\n" + items + "\n\n"
 
 
+## ALWAYS DIGITAL
 def get_label(entry):
-    if entry.tracklabel:
-        return entry.tracklabel
     m = re.search(label_matcher, entry.filebase)
     if not m:
         return ""

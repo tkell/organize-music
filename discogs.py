@@ -32,6 +32,7 @@ def call_discogs_no_cache(url):
         "Authorization": f"Discogs token={discogs_token}",
     }
     r = requests.get(url, headers=headers)
+    time.sleep(2)
     print("calling: ", url)
     return r.json()
 
