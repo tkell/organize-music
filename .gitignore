@@ -5,3 +5,4 @@ serato-db
 *.md
 *.json
 .*
+*.min.js
