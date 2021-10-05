@@ -35,28 +35,74 @@ makeSquare = function() {
       c.add(rect);
 
       let leftOffset = this.xSize / 10;
-      let rightOffset = this.xSize / 5;
       let yOffset = this.ySize / 2;
-  
-       var text = new fabric.Text(record.label, {
-         left: record.x + leftOffset,
-         top: record.y + yOffset,
-         fill: '#ffffff',
-         fontSize: 20
-       });
-       c.add(text);
+      var text = new fabric.Text(record.label, {
+        left: record.x + leftOffset,
+        top: record.y + yOffset,
+        fill: '#ffffff',
+        fontSize: 20
+      });
+      c.add(text);
     }
   }
   return square;
 }
 
+makeTriangle = function () {
+  triangle = {};
+  triangle.xSize = 200;
+  triangle.ySize = 200;
+  triangle.size = 1000;
+  triangle.colors = ["#ee3300", "#cc7700", "#aa5500", "#cccc00"];
+  
+  triangle.prepare = function(data) {
+    var x = 0;
+    var y = 0;
+    var colorIndex = 0;
+    for (let record of data) {
+      record.x = x;
+      record.y = y;
+      record.colorIndex = colorIndex;
+      x = x + this.xSize;
+      if (x > this.size) {
+        x = 0;
+        y = y + this.ySize;
+      }
+      colorIndex = (colorIndex + 1) % 4;
+    }
+    return data;
+  }
+  
+  triangle.render = function(c, data) {
+    for (let record of data) {
+      var tri = new fabric.Triangle({
+        left: record.x,
+        top: record.y,
+        fill: this.colors[record.colorIndex],
+        width: this.xSize,
+        height: this.ySize,
+      });
+      c.add(tri);
+  
+      let leftOffset = this.xSize / 5;
+      let yOffset = this.ySize / 2;
+      var text = new fabric.Text(record.label, {
+        left: record.x + leftOffset,
+        top: record.y + yOffset,
+        fill: '#ffffff',
+        fontSize: 20
+      });
+      c.add(text);
+    }
+  }
+  return triangle;
+}
+
 // pick a tessellations, then ..
-sq = makeSquare();
+tess = makeTriangle(); 
 fetch('vinyl.json')
   .then(response => response.json())
   .then(data => {
       var canvas = new fabric.StaticCanvas('vinylCanvas');
-
-      let preparedData = sq.prepare(data);
-      sq.render(canvas, data)
+      tess.render(canvas, tess.prepare(data))
   });
