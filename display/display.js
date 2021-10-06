@@ -29,8 +29,8 @@ makeSquare = function() {
         left: record.x,
         top: record.y,
         fill: this.colors[record.colorIndex],
-        width: record.x + this.xSize,
-        height: record.y + this.ySize,
+        width: this.xSize,
+        height: this.ySize,
       });
       c.add(rect);
 
@@ -99,7 +99,7 @@ makeTriangle = function () {
 }
 
 // pick a tessellations, then ..
-tess = makeTriangle(); 
+tess = makeSquare(); 
 fetch('vinyl.json')
   .then(response => response.json())
   .then(data => {
