@@ -58,14 +58,20 @@ makeTriangle = function () {
   triangle.prepare = function(data) {
     var x = 0;
     var y = 0;
+    var angle = 0;
     var colorIndex = 0;
     for (let record of data) {
       record.x = x;
       record.y = y;
+      record.angle = angle;
       record.colorIndex = colorIndex;
       x = x + this.xSize;
-      if (x > this.size) {
+      if (x > this.size && angle === 0) {
+        x = (this.xSize * (3/ 2)) + 1;
+        angle = 180
+      } else if (x > this.size && angle === 180) {
         x = 0;
+        angle = 0;
         y = y + this.ySize;
       }
       colorIndex = (colorIndex + 1) % 4;
@@ -81,6 +87,7 @@ makeTriangle = function () {
         fill: this.colors[record.colorIndex],
         width: this.xSize,
         height: this.ySize,
+        angle: record.angle,
       });
       c.add(tri);
   
@@ -93,13 +100,14 @@ makeTriangle = function () {
         fontSize: 20
       });
       c.add(text);
+      c.bringToFront(text);
     }
   }
   return triangle;
 }
 
 // pick a tessellations, then ..
-tess = makeSquare(); 
+tess = makeTriangle(); 
 fetch('vinyl.json')
   .then(response => response.json())
   .then(data => {
