@@ -53,54 +53,56 @@ makeTriangle = function () {
   triangle.xSize = 200;
   triangle.ySize = 200;
   triangle.size = 1000;
-  triangle.colors = ["#ee3300", "#cc7700", "#aa5500", "#cccc00"];
+  triangle.images = ["images/1.jpg", "images/2.jpg", "images/3.jpg"];
   
   triangle.prepare = function(data) {
     var x = 0;
     var y = 0;
     var angle = 0;
-    var colorIndex = 0;
+    var imageIndex = 0;
     for (let record of data) {
       record.x = x;
       record.y = y;
       record.angle = angle;
-      record.colorIndex = colorIndex;
-      x = x + this.xSize;
-      if (x > this.size && angle === 0) {
-        x = (this.xSize * (3/ 2)) + 1;
-        angle = 180
-      } else if (x > this.size && angle === 180) {
+      record.imageIndex = imageIndex;
+      if (angle === 0) {
+        x = x + this.xSize / 2;
+        angle = 180;
+      } else if (angle === 180) {
+        x = x + this.xSize / 2;
+        angle = 0
+      }
+      if (x + (this.xSize) > this.size) {
         x = 0;
         angle = 0;
         y = y + this.ySize;
       }
-      colorIndex = (colorIndex + 1) % 4;
+      imageIndex = (imageIndex + 1) % 3;
     }
     return data;
   }
   
   triangle.render = function(c, data) {
     for (let record of data) {
-      var tri = new fabric.Triangle({
-        left: record.x,
-        top: record.y,
-        fill: this.colors[record.colorIndex],
+      let triangleClipPath = new fabric.Triangle({
+        originX: 'center',
+        originY: 'center',
         width: this.xSize,
         height: this.ySize,
         angle: record.angle,
+        selectable: false,
       });
-      c.add(tri);
-  
-      let leftOffset = this.xSize / 5;
-      let yOffset = this.ySize / 2;
-      var text = new fabric.Text(record.label, {
-        left: record.x + leftOffset,
-        top: record.y + yOffset,
-        fill: '#ffffff',
-        fontSize: 20
+      let imagePath = triangle.images[record.imageIndex];
+      fabric.Image.fromURL(imagePath, function(img) {
+        img.left = record.x - (img.width / 2) + (triangle.xSize / 2);
+        img.top = record.y - (img.height / 2) + triangle.ySize / 2;
+        img.selectable = false;
+        img.clipPath = triangleClipPath;
+        img.on('mousedown', function(event) {
+          console.log(record.title);
+        });
+        c.add(img);
       });
-      c.add(text);
-      c.bringToFront(text);
     }
   }
   return triangle;
@@ -111,6 +113,6 @@ tess = makeTriangle();
 fetch('vinyl.json')
   .then(response => response.json())
   .then(data => {
-      var canvas = new fabric.StaticCanvas('vinylCanvas');
+      var canvas = new fabric.Canvas('vinylCanvas');
       tess.render(canvas, tess.prepare(data))
   });
