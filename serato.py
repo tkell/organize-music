@@ -80,5 +80,5 @@ def make_json_file(serato_database, output_filename):
 
 if __name__ == "__main__":
     db = scratchlivedb.ScratchDatabase("serato-db/database V2")
-    make_markdown_file(db, "digital.md")
-    make_json_file(db, "digital.json")
+    make_markdown_file(db, "serato.md")
+    make_json_file(db, "serato.json")
