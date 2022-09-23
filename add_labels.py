@@ -4,18 +4,7 @@ import mutagen
 from mutagen.id3 import ID3, TPUB, TYER
 import requests
 
-# import the token
-with open("discogs-token.txt") as f:
-    discogs_token = f.readline().strip()
-
-
-def call_discogs(url):
-    headers = {
-        "user-agent": "DiscogsOrganize +http://tide-pool.ca",
-        "Authorization": f"Discogs token={discogs_token}",
-    }
-    r = requests.get(url, headers=headers)
-    return r.json()
+import lib_discogs
 
 
 def set_tag(filepath, tag_name, tag_content):
@@ -68,7 +57,7 @@ for filename in filenames:
             search_url = (
                 f'https://api.discogs.com/database/search?query="{track}"&type=release'
             )
-            res = call_discogs(search_url)
+            res = lib_discogs.call_discogs(search_url)
             try:
                 potential_label = res["results"][0]["label"][0]
                 potential_year = res["results"][0]["year"]

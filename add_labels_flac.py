@@ -3,19 +3,6 @@ import re
 import mutagen
 import requests
 
-# import the token
-with open("discogs-token.txt") as f:
-    discogs_token = f.readline().strip()
-
-
-def call_discogs(url):
-    headers = {
-        "user-agent": "DiscogsOrganize +http://tide-pool.ca",
-        "Authorization": f"Discogs token={discogs_token}",
-    }
-    r = requests.get(url, headers=headers)
-    return r.json()
-
 
 def set_tag(filepath, tag_name, tag_content):
     f = mutagen.File(filepath)
@@ -44,7 +31,7 @@ def get_label_from(filebase):
 
 singles_dir = "/Volumes/Productions"
 filenames = os.listdir(singles_dir)
-# FLACS DONE, GOTTA MAKE MP3S WORK
+# FLAC only
 for filename in filenames:
     if ".flac" in filename:
         if not get_label_from(filename):
