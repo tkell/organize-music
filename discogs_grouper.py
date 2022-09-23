@@ -1,4 +1,7 @@
-## yeah, so where does this go?
+import random
+import urllib
+
+import lib_discogs
 
 
 class SkipRelease(Exception):
@@ -32,7 +35,7 @@ def group(artist, track, label):
         release_number = prompt("Select a release", int)
         release = discogs_json["results"][release_number]
         release_url = release["resource_url"]
-        release_details = call_discogs_no_cache(release_url)
+        release_details = lib_discogs.call_discogs_no_cache(release_url)
 
         for index, track in enumerate(release_details["tracklist"]):
             title = track["title"]
@@ -77,7 +80,7 @@ def group(artist, track, label):
         else:
             raise DiscogsSearchFailed
 
-        discogs_json = call_discogs_no_cache(url)
+        discogs_json = lib_discogs.call_discogs_no_cache(url)
         return discogs_json
 
     print(f"{artist} - {track} [{label}]")

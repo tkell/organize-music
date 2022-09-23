@@ -10,7 +10,6 @@ import pyperclip
 
 import discogs_grouper
 
-## SETUP AND CONSTANTS
 label_regex = r"[(.*)]"
 OLD_PATH = "/Users/thor/Desktop/parsed/singles"
 NEW_PATH = "/Users/thor/Desktop/parsed/albums"
