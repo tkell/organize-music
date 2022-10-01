@@ -3,18 +3,16 @@ from collections import defaultdict
 from urllib.parse import urlparse
 
 import lib_discogs
+import discogs_album_search
 
 
 if __name__ == "__main__":
     albums_dir = "/Volumes/Music/Albums"
     folders = os.listdir(albums_dir)
+    print("listed directories")
 
-    debug_count = 50
     counts = defaultdict(int)
     for folder in folders:
-        if counts["total"] >= debug_count:
-            break
-
         cover_flag = False
         tracks_file_flag = False
         dir_path = os.path.join(albums_dir, folder)
@@ -33,13 +31,34 @@ if __name__ == "__main__":
                     with open(tracks_file_path) as f:
                         album_source_url = f.readline().strip()
                         if album_source_url == "not-on-discogs":
-                            counts["tracks file is not on discogs"] += 1
+                            counts[
+                                "tracks file is not on discogs or anywhere else"
+                            ] += 1
                         else:
-                            hostname = urlparse(album_source_url).hostname
-                            key = "tracks file is at " + hostname
-                            counts[key] += 1
+                            try:
+                                hostname = urlparse(album_source_url).hostname
+                                key = "tracks file is at " + hostname
+                                counts[key] += 1
+                            except TypeError:
+                                print("an error", folder)
 
             if not cover_flag and not tracks_file_flag:
                 counts["no cover or no tracks"] += 1
+                print(folder)
 
+                artist = folder.split(" - ")[0].strip()
+                if artist == "Various Artists":
+                    artist = "Various"  # discogs!
+
+                album_and_label = folder.split(" - ")[-1].strip()
+                album = album_and_label.split("[")[0].strip()
+                label = album_and_label.split("[")[1].strip().replace("]", "")
+                discogs_url = discogs_album_search.search(artist, album, label)
+
+                folder_path = os.path.join(albums_dir, folder)
+                num_tracks = len(os.listdir(folder_path))
+                tracks_filename = os.path.join(folder_path, f"{num_tracks}.tracks")
+                print(f"here's our discogs url: {discogs_url}")
+                with open(tracks_filename, "w") as f:
+                    f.write(discogs_url)
     print(counts)

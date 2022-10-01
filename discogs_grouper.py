@@ -60,7 +60,7 @@ def group(artist, track, label):
         year = release.get("year", "year missing")
         print(f"{index}: {title} - {label} {catno} {year}")
 
-    def search_discogs(artist, track, label, search_attempt):
+    def search_discogs_for_track(artist, track, label, search_attempt):
         a = urllib.parse.quote(artist.lower())
         t = urllib.parse.quote(track.lower().replace("(original mix)", ""))
         l = urllib.parse.quote(label.lower())
@@ -98,7 +98,9 @@ def group(artist, track, label):
         search_attempt = 0
         while not the_search_is_good:
             try:
-                discogs_json = search_discogs(artist, track, label, search_attempt)
+                discogs_json = search_discogs_for_track(
+                    artist, track, label, search_attempt
+                )
             except DiscogsSearchFailed:
                 break
 
