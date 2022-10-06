@@ -33,8 +33,8 @@ def call_discogs_no_cache(url, is_retry=False):
     }
     r = requests.get(url, headers=headers)
 
-    time.sleep(random.randint(2, 5))
-    print("calling: ", url)
+    time.sleep(random.randint(1, 3))
+    # print("calling: ", url)
     try:
         result = r.json()
     except json.JSONDecodeError:
