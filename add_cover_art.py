@@ -11,11 +11,11 @@ import lib_discogs
 import discogs_album_search
 
 
-def find_and_download_discog_cover(album_source_url):
+def find_and_download_discog_cover(album_source_url, folder):
     album_url = urlparse(album_source_url)
     key = "tracks file is at " + album_url.hostname
     if album_url.hostname != "www.discogs.com":
-        print(f"____ not a discogs url, we'll get it later:  {album_source_url}")
+        print(f"____ not a discogs url for {folder}: {album_source_url}")
         return
     else:
         if "master/" in album_url.path:
@@ -74,10 +74,6 @@ if __name__ == "__main__":
 
     counts = defaultdict(int)
     for folder in folders:
-        # Alphabets!
-        if folder[0].lower() != "e":
-            continue
-
         cover_flag = False
         tracks_file_flag = False
         dir_path = os.path.join(albums_dir, folder)
@@ -103,16 +99,15 @@ if __name__ == "__main__":
                     with open(tracks_file_path) as f:
                         album_source_url = f.readline().strip()
                         if album_source_url == "not-on-discogs":
-                            counts[
-                                "tracks file is not on discogs or anywhere else"
-                            ] += 1
+                            print(f"not on discogs: {folder}")
+                            counts["not on discogs or anywhere else"] += 1
                         else:
                             try:
-                                find_and_download_discog_cover(album_source_url)
+                                find_and_download_discog_cover(album_source_url, folder)
                             except TypeError:
                                 print("an error", folder)
 
             if not cover_flag and not tracks_file_flag:
                 print("yikes!  We should have none of these!")
-                search_discogs_for_albums(folder)
+                ## search_discogs_for_albums(folder)
     print(counts)
