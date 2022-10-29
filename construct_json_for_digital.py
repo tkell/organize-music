@@ -37,12 +37,22 @@ if __name__ == "__main__":
             tracks_dict = {"position": position, "title": track_title}
             formatted_tracks.append(tracks_dict)
 
+        valid_cover_files = ["cover.jpg", "cover.png"]
+        for folder_file in folder_files:
+            if folder_file in valid_cover_files:
+                cover_file_path = os.path.join(folder_path, folder_file)
+
+        if not cover_file_path:
+            print(f"panic!  no cover for {folder_path}")
+            raise RuntimeError
+
         json_dict = {
             "id": id_string,
             "title": title,
             "artist": artist,
             "label": label,
             "tracks": formatted_tracks,
+            "image_path": cover_file_path,
         }
         all_tracks_json.append(json_dict)
 
