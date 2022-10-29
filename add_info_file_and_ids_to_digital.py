@@ -16,8 +16,8 @@ if __name__ == "__main__":
 
         m = hashlib.sha256()
         m.update(folder.encode("utf-8"))
-        id_string = m.hexdigest()[0:24]
-        info_dict = {"id": id_string}
+        id_integer = int(m.hexdigest()[0:24], 16)
+        info_dict = {"id": id_integer}
 
         info_filepath = os.path.join(folder_path, "info.json")
         with open(info_filepath, "w") as f:

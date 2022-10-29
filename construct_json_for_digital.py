@@ -33,8 +33,16 @@ if __name__ == "__main__":
         formatted_tracks = []
         for track in tracks:
             position = track.split(" - ")[0]
-            track_title = track.split(" - ")[1].split(".")[0]
-            tracks_dict = {"position": position, "title": track_title}
+
+            track_title = " - ".join(track.split(" - ")[1:])
+            track_title = ".".join(track_title.split(".")[0:-1])
+            track_filepath = os.path.join(folder_path, track)
+
+            tracks_dict = {
+                "position": position,
+                "title": track_title,
+                "filepath": track_filepath,
+            }
             formatted_tracks.append(tracks_dict)
 
         valid_cover_files = ["cover.jpg", "cover.png"]
