@@ -15,7 +15,7 @@ if __name__ == "__main__":
         info_filepath = os.path.join(folder_path, "info.json")
         with open(info_filepath, "r") as f:
             info_dict = json.load(f)
-            id_string = info_dict["id"]
+            release_id = int(info_dict["id"])
 
         artist = folder.split(" - ")[0].strip()
         title = folder.split(" - ")[1].split(" [")[0].strip()
@@ -55,7 +55,7 @@ if __name__ == "__main__":
             raise RuntimeError
 
         json_dict = {
-            "id": id_string,
+            "id": release_id,
             "title": title,
             "artist": artist,
             "label": label,
