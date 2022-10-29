@@ -1,0 +1,24 @@
+import hashlib
+import json
+import os
+
+if __name__ == "__main__":
+    albums_dir = "/Volumes/Music/Albums"
+    folders = os.listdir(albums_dir)
+    print("listed directories")
+
+    for folder in folders:
+        if folder == ".DS_Store":
+            continue
+
+        folder_path = os.path.join(albums_dir, folder)
+        print(folder_path)
+
+        m = hashlib.sha256()
+        m.update(folder.encode("utf-8"))
+        id_string = m.hexdigest()[0:24]
+        info_dict = {"id": id_string}
+
+        info_filepath = os.path.join(folder_path, "info.json")
+        with open(info_filepath, "w") as f:
+            json.dump(info_dict, f)
