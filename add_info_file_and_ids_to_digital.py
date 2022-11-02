@@ -1,9 +1,14 @@
+import argparse
 import hashlib
 import json
 import os
 
 if __name__ == "__main__":
-    albums_dir = "/Volumes/Music/Albums"
+    parser = argparse.ArgumentParser()
+    parser.add_argument("folder_path")
+    args = parser.parse_args()
+
+    albums_dir = args.folder_path
     folders = os.listdir(albums_dir)
     print("listed directories")
 
