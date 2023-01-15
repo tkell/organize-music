@@ -41,7 +41,10 @@ def search(artist, album, label):
         catno = release.get("catno", "catno missing")
         title = release.get("title", "title missing")
         year = release.get("year", "year missing")
-        print(f"{index}: {title} - {label} {catno} {year}")
+
+        # hopefully we can use this to avoid "master" releases
+        discogs_url = release.get("resource_url", "no resource_url")
+        print(f"{index}: {title} - {label} {catno} {year};  discogs_url")
 
     def search_discogs_for_album(artist, album, label, search_attempt):
         a = urllib.parse.quote(artist.lower())
