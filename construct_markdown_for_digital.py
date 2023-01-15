@@ -1,6 +1,5 @@
+import json
 import os
-
-releases_path = "/Volumes/Music/Albums/"
 
 
 def is_audio_file(filename):
@@ -17,15 +16,16 @@ def is_audio_file(filename):
 
 if __name__ == "__main__":
     print("#Releases")
-    for filename in os.listdir(releases_path):
-        filepath = os.path.join(releases_path, filename)
-        if os.path.isdir(filepath):
-            release_title = filename
-            tracks = os.listdir(filepath)
-            print(release_title)
-            for track in tracks:
-                if is_audio_file(track):
-                    print("  " + track)
+    with open("organize-music/digital.json", "r") as f:
+        releases = json.load(f)
+    for release in releases:
+        release_string = (
+            f"{release['artist']} - {release['title']} [{release['label']}]"
+        )
+        print(release_string)
+        for track in release["tracks"]:
+            track_string = f"  {track['position']} - {track['title']}"
+            print(track_string)
 
     print("\n" + "#Productions")
     for filename in os.listdir("/Volumes/Productions"):
