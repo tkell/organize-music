@@ -4,13 +4,13 @@ import json
 import os
 
 if __name__ == "__main__":
+    print("starting info_file adder")
     parser = argparse.ArgumentParser()
     parser.add_argument("folder_path")
     args = parser.parse_args()
 
     albums_dir = args.folder_path
     folders = os.listdir(albums_dir)
-    print("listed directories")
 
     for folder in folders:
         if folder == ".DS_Store":

@@ -85,6 +85,7 @@ def move_file(folder_path, new_data, old_data):
 
 
 if __name__ == "__main__":
+    print("starting single grouper ...")
     singles = os.listdir(OLD_PATH)
     artist_and_label_groups = group_by_artist_and_label(singles)
     print(f"*** {len(artist_and_label_groups.items())} to go **")

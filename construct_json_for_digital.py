@@ -2,6 +2,7 @@ import json
 import os
 
 if __name__ == "__main__":
+    print("stating JSON file construction for digital")
     albums_dir = "/Volumes/Music/Albums"
     folders = os.listdir(albums_dir)
 

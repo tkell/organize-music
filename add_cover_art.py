@@ -70,9 +70,9 @@ def search_discogs_for_albums(folder):
 
 
 if __name__ == "__main__":
+    print("starting add cover art")
     albums_dir = "/Users/thor/Desktop/parsed/albums/"
     folders = os.listdir(albums_dir)
-    print("add cover art - listed directories")
 
     counts = defaultdict(int)
     for folder in folders:
