@@ -26,7 +26,6 @@ def find_and_download_discog_cover(album_source_url, folder):
         release_id = album_url.path.split("/")[2].split("-")[0]
         release_api_url = f"https://api.discogs.com/releases/{release_id}"
         release_data = lib_discogs.call_discogs(release_api_url)
-        ## what if we have no images?
         if "images" not in release_data.keys():
             print(f"~~~~ no images found on discogs for {album_source_url}")
             return
@@ -34,16 +33,19 @@ def find_and_download_discog_cover(album_source_url, folder):
         image_url = release_data["images"][0]["uri"]
         path = os.path.join(albums_dir, folder, "cover.jpg")
         if not os.path.isfile(path):
-            # print(f"downloading for {folder}:  {image_url}")
-            response = requests.get(image_url, stream=True)
+            print(f"downloading for {folder}:  {image_url}")
+            headers = {
+                "User-Agent": "Thor's Music Organizer",
+            }
+            response = requests.get(image_url, stream=True, headers=headers)
             with open(path, "wb") as out_file:
                 shutil.copyfileobj(response.raw, out_file)
             del response
             time.sleep(2)
-            # print("downloaded!")
+            print("downloaded!")
         else:
             pass
-            # print("cover file already exists for ", folder)
+            print("cover file already exists for ", folder)
 
     return
 
@@ -68,9 +70,9 @@ def search_discogs_for_albums(folder):
 
 
 if __name__ == "__main__":
-    albums_dir = "/Volumes/Music/Albums"
+    albums_dir = "/Users/thor/Desktop/parsed/albums/"
     folders = os.listdir(albums_dir)
-    print("listed directories")
+    print("add cover art - listed directories")
 
     counts = defaultdict(int)
     for folder in folders:
@@ -104,7 +106,8 @@ if __name__ == "__main__":
                         else:
                             try:
                                 find_and_download_discog_cover(album_source_url, folder)
-                            except TypeError:
+                            except TypeError as e:
+                                print(e)
                                 print("an error", folder)
 
             if not cover_flag and not tracks_file_flag:

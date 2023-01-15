@@ -4,14 +4,12 @@ import os
 if __name__ == "__main__":
     albums_dir = "/Volumes/Music/Albums"
     folders = os.listdir(albums_dir)
-    print("listed directories ...")
 
     all_tracks_json = []
     for folder in folders:
         if folder == ".DS_Store":
             continue
         folder_path = os.path.join(albums_dir, folder)
-        print(folder_path)
         info_filepath = os.path.join(folder_path, "info.json")
         with open(info_filepath, "r") as f:
             info_dict = json.load(f)
@@ -64,5 +62,5 @@ if __name__ == "__main__":
         }
         all_tracks_json.append(json_dict)
 
-    with open("digital.json", "w") as f:
+    with open("organize-music/digital.json", "w") as f:
         json.dump(all_tracks_json, f)

@@ -6,7 +6,7 @@ import time
 import requests
 
 # import the token
-with open("discogs-token.txt") as f:
+with open("/Volumes/Bragi/Code/music-collection/organize-music/discogs-token.txt") as f:
     discogs_token = f.readline().strip()
 
 # load the cache
