@@ -16,10 +16,14 @@ if __name__ == "__main__":
             info_dict = json.load(f)
             release_id = int(info_dict["id"])
 
-        artist = folder.split(" - ")[0].strip()
-        title = folder.split(" - ")[1].split(" [")[0].strip()
-        title = title.replace(" : ", " / ")
-        label = folder.split(" [")[1][0:-1].strip()
+        try:
+            artist = folder.split(" - ")[0].strip()
+            title = folder.split(" - ")[1].split(" [")[0].strip()
+            title = title.replace(" : ", " / ")
+            label = folder.split(" [")[1][0:-1].strip()
+        except Exception as e:
+            print(folder)
+            raise e
 
         folder_files = os.listdir(folder_path)
 
