@@ -2,11 +2,8 @@ import os
 import random
 import re
 import shutil
-import urllib.parse
 from collections import defaultdict
 
-import requests
-import pyperclip
 
 import discogs_grouper
 
@@ -124,7 +121,8 @@ if __name__ == "__main__":
             filename = matched_singles[0]
             first_track = filename.split(" - ")[1].split(" [")[0]
             try:
-                result = interact_and_get_data(artist, first_track, label)
+                print("Getting release from first track")
+                result = discogs_grouper.group(artist, first_track, label)
                 if result:
                     folder_path = create_folder_and_meta(result, artist, label)
 
@@ -139,7 +137,6 @@ if __name__ == "__main__":
                             num_tracks,
                             discogs_url,
                         )
-
                         move_file(folder_path, new_data, old_data)
                     print("done writing, insert celebratory emojis here")
             except SkipRelease:

@@ -118,7 +118,7 @@ def group(artist, track, label):
             elif action == "n":
                 search_attempt += 1
 
-        if not discogs_json or the_search_is_good == False:
+        if not discogs_json or the_search_is_good is False:
             action = prompt("Fall back to manual entry, or skip?, 'e' or 's'?")
             if action == "e":
                 return enter_data_manually(track)
