@@ -54,6 +54,12 @@ def group(artist, track, label):
         return release_title, track_numbers, num_tracks, discogs_url
 
     def print_discogs_releases(index, release):
+        url = release.get("resource_url", "")
+        # try a bit harder to avoid master releases
+        if "masters/" in url:
+            print("skipped master release")
+            return
+
         label = release.get("label", "label missing")
         catno = release.get("catno", "catno missing")
         title = release.get("title", "title missing")

@@ -33,15 +33,15 @@ def call_discogs_no_cache(url, is_retry=False):
     }
     r = requests.get(url, headers=headers)
 
-    time.sleep(random.randint(1, 3))
-    # print("calling: ", url)
+    time.sleep(random.randint(4, 5))
+    print("calling: ", url)
     try:
         result = r.json()
     except json.JSONDecodeError:
         print("calling url failed:", url)
         print("response reason", r.reason, r.status_code)
-        if r.status_code == 502 and is_retry == False:
-            time_to_sleep = random.randint(3, 6)
+        if r.status_code == 502 and is_retry is False:
+            time_to_sleep = random.randint(7, 10)
             time.sleep(time_to_sleep)
             result = call_discogs_no_cache(url, is_retry=True)
         else:
@@ -59,6 +59,7 @@ def call_discogs(url):
         if now - timestamp < cache_expiry_seconds:
             print("cache hit: ", url)
             return cached_data
+    print("cache miss: ", url)
     json_data = call_discogs_no_cache(url)
     discogs_cache[url] = (json_data, now)
     # load / overwrite cache each time!
