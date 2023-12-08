@@ -17,6 +17,7 @@ if __name__ == "__main__":
             release_id = int(info_dict["id"])
 
         try:
+            print(folder)
             artist = folder.split(" - ")[0].strip()
             title = folder.split(" - ")[1].split(" [")[0].strip()
             title = title.replace(" : ", " / ")
@@ -67,5 +68,5 @@ if __name__ == "__main__":
         }
         all_tracks_json.append(json_dict)
 
-    with open("organize-music/digital.json", "w") as f:
+    with open("digital.json", "w") as f:
         json.dump(all_tracks_json, f)

@@ -16,7 +16,7 @@ def is_audio_file(filename):
 
 if __name__ == "__main__":
     print("#Releases")
-    with open("organize-music/digital.json", "r") as f:
+    with open("digital.json", "r") as f:
         releases = json.load(f)
     for release in releases:
         release_string = (
