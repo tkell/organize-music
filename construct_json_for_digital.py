@@ -1,9 +1,10 @@
 import json
 import os
+import sys
 
 if __name__ == "__main__":
-    print("stating JSON file construction for digital")
-    albums_dir = "/Volumes/Music/Albums"
+    print("starting JSON file construction for digital")
+    albums_dir = sys.argv[1]
     folders = os.listdir(albums_dir)
 
     all_tracks_json = []
@@ -17,7 +18,7 @@ if __name__ == "__main__":
             release_id = int(info_dict["id"])
 
         try:
-            print(folder)
+            print(".",)
             artist = folder.split(" - ")[0].strip()
             title = folder.split(" - ")[1].split(" [")[0].strip()
             title = title.replace(" : ", " / ")
@@ -37,10 +38,9 @@ if __name__ == "__main__":
         formatted_tracks = []
         for track in tracks:
             position = track.split(" - ")[0]
-
             track_title = " - ".join(track.split(" - ")[1:])
             track_title = ".".join(track_title.split(".")[0:-1])
-            track_filepath = os.path.join(folder_path, track)
+            track_filepath = os.path.join(folder, track)
 
             tracks_dict = {
                 "position": position,
