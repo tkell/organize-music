@@ -2,6 +2,36 @@ import json
 import os
 import sys
 
+
+def update_from_existing_json_file(existing_json_file):
+    with open(existing_json_file) as f:
+        all_tracks_json = json.load(f)
+        for existing in all_tracks_json:
+            image_path = existing["image_path"]
+            folder_path = os.path.dirname(image_path)
+            existing_folders.add(folder_path)
+    return all_tracks_json, existing_folders
+
+
+def get_album_data(folder_path):
+    info_filepath = os.path.join(folder_path, "info.json")
+    with open(info_filepath, "r") as f:
+        info_dict = json.load(f)
+        release_id = int(info_dict["id"])
+
+    try:
+        print(folder)
+        artist = folder.split(" - ")[0].strip()
+        title = folder.split(" - ")[1].split(" [")[0].strip()
+        title = title.replace(" : ", " / ")
+        label = folder.split(" [")[1][0:-1].strip()
+
+        return artist, title, label, release_id
+    except Exception as e:
+        print(folder)
+        raise e
+
+
 if __name__ == "__main__":
     print("starting JSON file construction for digital")
     albums_dir = sys.argv[1]
@@ -9,13 +39,7 @@ if __name__ == "__main__":
     all_tracks_json = []
     existing_folders = set()
     if len(sys.argv) == 3:
-        existing_json_file = sys.argv[2]
-        with open(existing_json_file) as f:
-            all_tracks_json = json.load(f)
-            for existing in all_tracks_json:
-                image_path = existing["image_path"]
-                folder_path = os.path.dirname(image_path)
-                existing_folders.add(folder_path)
+        all_tracks_json, existing_folders = update_from_existing_json_file(sys.argv[2])
 
     folders = os.listdir(albums_dir)
     for folder in folders:
@@ -25,24 +49,9 @@ if __name__ == "__main__":
         if folder_path in existing_folders:
             continue
 
-        info_filepath = os.path.join(folder_path, "info.json")
-        with open(info_filepath, "r") as f:
-            info_dict = json.load(f)
-            release_id = int(info_dict["id"])
-
-        try:
-            print(folder)
-            artist = folder.split(" - ")[0].strip()
-            title = folder.split(" - ")[1].split(" [")[0].strip()
-            title = title.replace(" : ", " / ")
-            label = folder.split(" [")[1][0:-1].strip()
-        except Exception as e:
-            print(folder)
-            break
-            raise e
+        artist, title, label, release_id = get_album_data(folder_path)
 
         folder_files = os.listdir(folder_path)
-
         tracks = []
         formats = ["flac", "mp3", "m4a", "aac", "wav"]
         for folder_file in folder_files:
