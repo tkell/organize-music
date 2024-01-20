@@ -18,14 +18,16 @@ if __name__ == "__main__":
             release_id = int(info_dict["id"])
 
         try:
-            print(".",)
+            print(folder)
             artist = folder.split(" - ")[0].strip()
             title = folder.split(" - ")[1].split(" [")[0].strip()
             title = title.replace(" : ", " / ")
             label = folder.split(" [")[1][0:-1].strip()
         except Exception as e:
             print(folder)
+            break
             raise e
+
 
         folder_files = os.listdir(folder_path)
 

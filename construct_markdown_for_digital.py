@@ -28,11 +28,11 @@ if __name__ == "__main__":
             print(track_string)
 
     print("\n" + "#Productions")
-    for filename in os.listdir("/Volumes/Productions"):
+    for filename in os.listdir("/Volumes/Mimir/Productions"):
         if is_audio_file(filename):
             print(filename)
 
     print("\n" + "#Tide Pool")
-    for filename in os.listdir("/Volumes/Tide Pool"):
+    for filename in os.listdir("/Volumes/Mimir/Tide Pool"):
         if is_audio_file(filename):
             print(filename)

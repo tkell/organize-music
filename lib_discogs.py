@@ -19,10 +19,10 @@ except Exception:
         pickle.dump({}, f)
         discogs_cache = {}
 
-# cache for 60 to 120 days
+# cache for 120 to 300 days
 # this jitter at runtime is so we don't just re-hammer discogs
 def get_cache_expiry():
-    days = random.randint(60, 120)
+    days = random.randint(120, 300)
     return 60 * 60 * 24 * days
 
 
