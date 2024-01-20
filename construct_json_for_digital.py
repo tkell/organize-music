@@ -5,13 +5,26 @@ import sys
 if __name__ == "__main__":
     print("starting JSON file construction for digital")
     albums_dir = sys.argv[1]
-    folders = os.listdir(albums_dir)
 
     all_tracks_json = []
+    existing_folders = set()
+    if len(sys.argv) == 3:
+        existing_json_file = sys.argv[2]
+        with open(existing_json_file) as f:
+            all_tracks_json = json.load(f)
+            for existing in all_tracks_json:
+                image_path = existing["image_path"]
+                folder_path = os.path.dirname(image_path)
+                existing_folders.add(folder_path)
+
+    folders = os.listdir(albums_dir)
     for folder in folders:
         if folder == ".DS_Store":
             continue
         folder_path = os.path.join(albums_dir, folder)
+        if folder_path in existing_folders:
+            continue
+
         info_filepath = os.path.join(folder_path, "info.json")
         with open(info_filepath, "r") as f:
             info_dict = json.load(f)
@@ -27,7 +40,6 @@ if __name__ == "__main__":
             print(folder)
             break
             raise e
-
 
         folder_files = os.listdir(folder_path)
 
