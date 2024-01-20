@@ -32,6 +32,47 @@ def get_album_data(folder_path):
         raise e
 
 
+def get_tracks(folder_files):
+    tracks = []
+    formats = ["flac", "mp3", "m4a", "aac", "wav"]
+    for folder_file in folder_files:
+        if folder_file.split(".")[-1] in formats:
+            tracks.append(folder_file)
+
+    return tracks
+
+
+def get_formatted_tracks(tracks):
+    formatted_tracks = []
+    for track in tracks:
+        position = track.split(" - ")[0]
+        track_title = " - ".join(track.split(" - ")[1:])
+        track_title = ".".join(track_title.split(".")[0:-1])
+        track_filepath = os.path.join(folder, track)
+
+        tracks_dict = {
+            "position": position,
+            "title": track_title,
+            "filepath": track_filepath,
+        }
+        formatted_tracks.append(tracks_dict)
+
+    return formatted_tracks
+
+
+def get_cover(folder_files):
+    valid_cover_files = ["cover.jpg", "cover.png"]
+    for folder_file in folder_files:
+        if folder_file in valid_cover_files:
+            cover_file_path = os.path.join(folder_path, folder_file)
+
+    if not cover_file_path:
+        print(f"panic!  no cover for {folder_path}")
+        raise RuntimeError
+
+    return cover_file_path
+
+
 if __name__ == "__main__":
     print("starting JSON file construction for digital")
     albums_dir = sys.argv[1]
@@ -50,36 +91,12 @@ if __name__ == "__main__":
             continue
 
         artist, title, label, release_id = get_album_data(folder_path)
+        tracks = get_tracks(folder_path)
 
         folder_files = os.listdir(folder_path)
-        tracks = []
-        formats = ["flac", "mp3", "m4a", "aac", "wav"]
-        for folder_file in folder_files:
-            if folder_file.split(".")[-1] in formats:
-                tracks.append(folder_file)
-
-        formatted_tracks = []
-        for track in tracks:
-            position = track.split(" - ")[0]
-            track_title = " - ".join(track.split(" - ")[1:])
-            track_title = ".".join(track_title.split(".")[0:-1])
-            track_filepath = os.path.join(folder, track)
-
-            tracks_dict = {
-                "position": position,
-                "title": track_title,
-                "filepath": track_filepath,
-            }
-            formatted_tracks.append(tracks_dict)
-
-        valid_cover_files = ["cover.jpg", "cover.png"]
-        for folder_file in folder_files:
-            if folder_file in valid_cover_files:
-                cover_file_path = os.path.join(folder_path, folder_file)
-
-        if not cover_file_path:
-            print(f"panic!  no cover for {folder_path}")
-            raise RuntimeError
+        tracks = get_tracks(folder_files)
+        formatted_tracks = get_formatted_tracks(tracks)
+        cover_file_path = get_cover(folder_files)
 
         json_dict = {
             "id": release_id,
