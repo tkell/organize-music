@@ -1,6 +1,5 @@
 import os
 import shutil
-import sys
 import time
 from collections import defaultdict
 from urllib.parse import urlparse
@@ -13,7 +12,6 @@ import discogs_album_search
 
 def find_and_download_discog_cover(album_source_url, folder):
     album_url = urlparse(album_source_url)
-    key = "tracks file is at " + album_url.hostname
     if album_url.hostname != "www.discogs.com":
         print(f"____ not a discogs url for {folder}: {album_source_url}")
         return

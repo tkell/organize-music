@@ -125,7 +125,6 @@ if __name__ == "__main__":
                 result = discogs_grouper.group(artist, first_track, label)
                 if result:
                     folder_path = create_folder_and_meta(result, artist, label)
-
                     release_title, track_numbers, num_tracks, discogs_url = result
                     for track_number, filename in zip(track_numbers, matched_singles):
                         track = filename.split(" - ")[1].split(" [")[0]
