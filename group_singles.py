@@ -81,6 +81,19 @@ def move_file(folder_path, new_data, old_data):
         shutil.move(old_track_path, track_path)
 
 
+def _handle_and_move_each_file(filename, track_number, artist, label):
+    track = filename.split(" - ")[1].split(" [")[0]
+    extension = filename.split(".")[-1]
+    old_data = (filename, artist, track, label, extension)
+    new_data = (
+        release_title,
+        track_numbers[0],
+        num_tracks,
+        discogs_url,
+    )
+    move_file(folder_path, new_data, old_data)
+
+
 if __name__ == "__main__":
     print("starting single grouper ...")
     singles = os.listdir(OLD_PATH)
@@ -89,56 +102,21 @@ if __name__ == "__main__":
 
     # This case is "easy":  we just move the one file
     for key, matched_singles in artist_and_label_groups.items():
-        if len(matched_singles) == 1:
-            artist, label = key
-            filename = matched_singles[0]
-            track = filename.split(" - ")[1].split(" [")[0]
-            extension = filename.split(".")[-1]
-            try:
-                result = discogs_grouper.group(artist, track, label)
-                if result:
-                    folder_path = create_folder_and_meta(result, artist, label)
-                    old_data = (filename, artist, track, label, extension)
-                    release_title, track_numbers, num_tracks, discogs_url = result
-                    new_data = (
-                        release_title,
-                        track_numbers[0],
-                        num_tracks,
-                        discogs_url,
-                    )
-                    move_file(folder_path, new_data, old_data)
-                    print("done writing, insert celebratory emojis here")
-            except SkipRelease:
-                next
-            except StopRelease:
-                break
-        else:
-            artist, label = key
-            matched_singles.sort()
-            print("")
-            print("Matched multiple tracks:  ", matched_singles)
-            print("")
-            filename = matched_singles[0]
-            first_track = filename.split(" - ")[1].split(" [")[0]
-            try:
-                print("Getting release from first track")
-                result = discogs_grouper.group(artist, first_track, label)
-                if result:
-                    folder_path = create_folder_and_meta(result, artist, label)
-                    release_title, track_numbers, num_tracks, discogs_url = result
-                    for track_number, filename in zip(track_numbers, matched_singles):
-                        track = filename.split(" - ")[1].split(" [")[0]
-                        extension = filename.split(".")[-1]
-                        old_data = (filename, artist, track, label, extension)
-                        new_data = (
-                            release_title,
-                            track_number,
-                            num_tracks,
-                            discogs_url,
-                        )
-                        move_file(folder_path, new_data, old_data)
-                    print("done writing, insert celebratory emojis here")
-            except SkipRelease:
-                next
-            except StopRelease:
-                break
+        artist, label = key
+        matched_singles.sort()
+        print(f"Matched tracks:  {matched_singles}\n")
+        filename = matched_singles[0]
+        first_track = filename.split(" - ")[1].split(" [")[0]
+        try:
+            print("Getting release from first track")
+            result = discogs_grouper.group(artist, first_track, label)
+            if result:
+                folder_path = create_folder_and_meta(result, artist, label)
+                release_title, track_numbers, num_tracks, discogs_url = result
+                for track_number, filename in zip(track_numbers, matched_singles):
+                    _handle_and_move_each_file(filename, track_number, artist, label)
+                print("done writing, insert celebratory emojis here 🎊🎉🎈")
+        except SkipRelease:
+            next
+        except StopRelease:
+            break
