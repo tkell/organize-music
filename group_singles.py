@@ -1,3 +1,4 @@
+import json
 import os
 import random
 import re
@@ -48,20 +49,18 @@ def group_by_artist_and_label(singles):
 
 def create_folder_and_meta(new_data, artist, label):
     release_title, track_number, num_tracks, discogs_url = new_data
-
     folder = f"{artist} - {release_title} [{label}]".replace("/", ":")
-    meta_filename = f"{num_tracks}.tracks"
-
     print(f"New folder is {folder}")
-    print(f"Would write the discogs url to {meta_filename}")
     action = prompt("Write, y / n?")
 
     if action == "y":
         folder_path = os.path.join(NEW_PATH, folder)
+        meta_filename = "info.json"
         meta_path = os.path.join(folder_path, meta_filename)
         os.mkdir(folder_path)
+        metadata = {"num_tracks": num_tracks, "discogs_url": discogs_url}
         with open(meta_path, "w") as f:
-            f.write(discogs_url)
+            json.dump(metadata, f)
 
     return folder_path
 
