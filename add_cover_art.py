@@ -1,3 +1,4 @@
+import json
 import os
 import shutil
 import time
@@ -7,7 +8,6 @@ from urllib.parse import urlparse
 import requests
 
 import lib_discogs
-import discogs_album_search
 
 
 def find_and_download_discog_cover(album_source_url, folder):
@@ -48,25 +48,6 @@ def find_and_download_discog_cover(album_source_url, folder):
     return
 
 
-def search_discogs_for_albums(folder):
-    print(folder)
-    artist = folder.split(" - ")[0].strip()
-    if artist == "Various Artists":
-        artist = "Various"  # discogs!
-
-    album_and_label = folder.split(" - ")[-1].strip()
-    album = album_and_label.split("[")[0].strip()
-    label = album_and_label.split("[")[1].strip().replace("]", "")
-    discogs_url = discogs_album_search.search(artist, album, label)
-
-    folder_path = os.path.join(albums_dir, folder)
-    num_tracks = len(os.listdir(folder_path))
-    tracks_filename = os.path.join(folder_path, f"{num_tracks}.tracks")
-    print(f"here's our discogs url: {discogs_url}")
-    with open(tracks_filename, "w") as f:
-        f.write(discogs_url)
-
-
 if __name__ == "__main__":
     print("starting add cover art")
     albums_dir = "/Users/thor/Desktop/parsed/albums/"
@@ -91,24 +72,20 @@ if __name__ == "__main__":
                 continue
 
             # if not, looks for N.tracks, and find it!
-            for filename in filenames:
-                if filename.endswith(".tracks"):
-                    tracks_file_flag = True
-                    counts["tracks file exists"] += 1
-                    tracks_file_path = os.path.join(albums_dir, folder, filename)
-                    with open(tracks_file_path) as f:
-                        album_source_url = f.readline().strip()
-                        if album_source_url == "not-on-discogs":
-                            print(f"not on discogs: {folder}")
-                            counts["not on discogs or anywhere else"] += 1
-                        else:
-                            try:
-                                find_and_download_discog_cover(album_source_url, folder)
-                            except TypeError as e:
-                                print(e)
-                                print("an error", folder)
+            tracks_file_path = os.path.join(albums_dir, folder, "info.json")
+            with open(tracks_file_path) as f:
+                metadata = json.load(f)
+                album_source_url = metadata.get("discogs_url", "not-on-discogs")
+                if album_source_url == "not-on-discogs":
+                    print(f"not on discogs: {folder}")
+                    counts["not on discogs or anywhere else"] += 1
+                else:
+                    try:
+                        find_and_download_discog_cover(album_source_url, folder)
+                    except TypeError as e:
+                        print(e)
+                        print("an error", folder)
 
             if not cover_flag and not tracks_file_flag:
                 print("yikes!  We should have none of these!")
-                ## search_discogs_for_albums(folder)
     print(counts)

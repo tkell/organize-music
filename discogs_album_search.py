@@ -44,7 +44,7 @@ def search(artist, album, label):
 
         # hopefully we can use this to avoid "master" releases
         discogs_url = release.get("resource_url", "no resource_url")
-        print(f"{index}: {title} - {label} {catno} {year};  discogs_url")
+        print(f"{index}: {title} - {label} {catno} {year}; {discogs_url}")
 
     def search_discogs_for_album(artist, album, label, search_attempt):
         a = urllib.parse.quote(artist.lower())
@@ -66,7 +66,8 @@ def search(artist, album, label):
     print(f"about to search for: {artist} - {album} [{label}]")
     ## so this is tricky, we need to do a bunch of searches
     ## if we get an empty search result, do the next search
-    ## if we get a search result, we don't want, we want to be able to skip that search manually
+    ## if we get a search result we don't want,
+    ## we want to be able to skip that search manually
     the_search_is_good = False
     discogs_json = None
     search_attempt = 0
@@ -92,7 +93,7 @@ def search(artist, album, label):
         elif action == "n":
             search_attempt += 1
 
-    if not discogs_json or the_search_is_good == False:
+    if not discogs_json or the_search_is_good is False:
         action = prompt("Fall back to manual entry, or skip?, 'e' or 's'?")
         if action == "e":
             return enter_data_manually()
