@@ -13,8 +13,15 @@ def _add_id_to_folder(albums_dir, folder):
     info_dict = {"id": id_integer}
     print(folder_path, id_integer)
     info_filepath = os.path.join(folder_path, "info.json")
-    with open(info_filepath, "w") as f:
-        json.dump(info_dict, f)
+    if os.path.isfile(info_filepath):
+        with open(info_filepath, "r") as f:
+            metadata = json.load(f)
+        metadata["id"] = id_integer
+        with open(info_filepath, "w") as f:
+            json.dump(metadata, f)
+    else:
+        with open(info_filepath, "w") as f:
+            json.dump(info_dict, f)
 
 
 if __name__ == "__main__":

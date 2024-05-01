@@ -5,7 +5,7 @@ import os
 from discogs_album_search import search
 
 if __name__ == "__main__":
-    print("starting info_file adder")
+    print("ensuring discogs url")
     parser = argparse.ArgumentParser()
     parser.add_argument("folder_path")
     args = parser.parse_args()

@@ -56,7 +56,6 @@ if __name__ == "__main__":
     counts = defaultdict(int)
     for folder in folders:
         cover_flag = False
-        tracks_file_flag = False
         dir_path = os.path.join(albums_dir, folder)
         if os.path.isdir(dir_path):
             filenames = os.listdir(dir_path)
@@ -85,7 +84,4 @@ if __name__ == "__main__":
                     except TypeError as e:
                         print(e)
                         print("an error", folder)
-
-            if not cover_flag and not tracks_file_flag:
-                print("yikes!  We should have none of these!")
     print(counts)
