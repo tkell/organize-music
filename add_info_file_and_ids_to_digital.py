@@ -1,27 +1,23 @@
 import argparse
 import hashlib
-import json
 import os
 
+from local_file_io import albums_dir_to_folder_paths
+from local_file_io import read_info_file
+from local_file_io import write_info_file
 
-def _add_id_to_folder(albums_dir, folder):
-    folder_path = os.path.join(albums_dir, folder)
+
+def _add_id_to_folder(folder_path):
+    album_name = folder_path.split(os.path.sep)[-1]
 
     m = hashlib.sha256()
-    m.update(folder.encode("utf-8"))
+    m.update(album_name.encode("utf-8"))
     id_integer = int(m.hexdigest()[0:8], 16)
-    info_dict = {"id": id_integer}
+
     print(folder_path, id_integer)
-    info_filepath = os.path.join(folder_path, "info.json")
-    if os.path.isfile(info_filepath):
-        with open(info_filepath, "r") as f:
-            metadata = json.load(f)
-        metadata["id"] = id_integer
-        with open(info_filepath, "w") as f:
-            json.dump(metadata, f)
-    else:
-        with open(info_filepath, "w") as f:
-            json.dump(info_dict, f)
+    metadata = read_info_file(folder_path)
+    metadata["id"] = id_integer
+    write_info_file(folder_path, metadata)
 
 
 if __name__ == "__main__":
@@ -31,10 +27,6 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     albums_dir = args.folder_path
-    folders = os.listdir(albums_dir)
-
-    for folder in folders:
-        if folder == ".DS_Store":
-            continue
-        folder_path = os.path.join(albums_dir, folder)
-        _add_id_to_folder(albums_dir, folder)
+    folder_paths = albums_dir_to_folder_paths(albums_dir)
+    for folder_path in folder_paths:
+        _add_id_to_folder(folder_path)
