@@ -1,7 +1,7 @@
 import os
 import json
 
-import lib_discogs
+import src.discogs.lib_discogs as lib_discogs
 
 
 def make_release_string(release):
