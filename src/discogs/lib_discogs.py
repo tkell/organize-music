@@ -2,6 +2,7 @@ import json
 import pickle
 import random
 import time
+from urllib.parse import urlparse
 
 import requests
 
@@ -18,6 +19,7 @@ except Exception:
     with open(cache_filename, "wb") as f:
         pickle.dump({}, f)
         discogs_cache = {}
+
 
 # cache for 120 to 300 days
 # this jitter at runtime is so we don't just re-hammer discogs
@@ -77,9 +79,19 @@ def get_release_data(releases):
     return data
 
 
-def get_folder_name_and_releases(folder):
-    url = folder["resource_url"] + "/releases?per_page=100"
-    name = folder["name"].replace('""', "")
+def get_folder_name_and_releases(discogs_folder):
+    url = discogs_folder["resource_url"] + "/releases?per_page=100"
+    name = discogs_folder["name"].replace('""', "")
     folder_data = call_discogs_no_cache(url)
     releases = folder_data["releases"]
     return name, releases
+
+
+def download_release_data(album_source_url):
+    album_url = urlparse(album_source_url)
+    # path looks like /release/4301112-95-North-Let-Yourself-Go-Remixes
+    release_id = album_url.path.split("/")[2].split("-")[0]
+    release_api_url = f"https://api.discogs.com/releases/{release_id}"
+    release_data = call_discogs(release_api_url)
+
+    return release_data
