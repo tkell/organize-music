@@ -1,7 +1,7 @@
 import random
 import urllib
 
-import org.discogs.lib_discogs as lib_discogs
+import src.discogs.lib_discogs as lib_discogs
 
 
 class SkipRelease(Exception):

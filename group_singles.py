@@ -5,8 +5,8 @@ import re
 import shutil
 from collections import defaultdict
 
-import discogs_grouper
-from local_file_io import write_info_file
+import src.discogs.discogs_grouper as discogs_grouper
+from src.organize_music.local_file_io import write_info_file
 
 
 class SkipRelease(Exception):

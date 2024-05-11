@@ -1,10 +1,8 @@
-import argparse
 import os
 from urllib.parse import urlparse
 
 
 import src.discogs.lib_discogs as lib_discogs
-from src.organize_music.local_file_io import albums_dir_to_folder_paths
 from src.organize_music.local_file_io import read_info_file
 from src.organize_music.local_file_io import download_file
 
@@ -46,16 +44,5 @@ def ensure_cover_art(folder_path):
     if album_source_url == "not-on-discogs":
         print(f"not on discogs: {album_name}")
         return
+
     return _find_and_download_discog_cover(album_source_url, folder_path)
-
-
-if __name__ == "__main__":
-    print("starting add cover art")
-    parser = argparse.ArgumentParser()
-    parser.add_argument("folder_path")
-    args = parser.parse_args()
-
-    albums_dir = args.folder_path
-    folder_paths = albums_dir_to_folder_paths(albums_dir)
-    for folder_path in folder_paths:
-        ensure_cover_art(folder_path)

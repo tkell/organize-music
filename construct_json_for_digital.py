@@ -62,6 +62,7 @@ def get_formatted_tracks(tracks):
 
 def get_cover(folder_files):
     valid_cover_files = ["cover.jpg", "cover.png"]
+    cover_file_path = None
     for folder_file in folder_files:
         if folder_file in valid_cover_files:
             cover_file_path = os.path.join(folder_path, folder_file)

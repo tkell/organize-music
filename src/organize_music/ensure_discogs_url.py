@@ -1,8 +1,6 @@
-import argparse
 import os
 
 from src.discogs.discogs_album_search import search
-from src.organize_music.local_file_io import albums_dir_to_folder_paths
 from src.organize_music.local_file_io import read_info_file
 from src.organize_music.local_file_io import write_info_file
 
@@ -32,15 +30,3 @@ def ensure_discogs_url(folder_path):
     metadata["discogs_url"] = discogs_url
     written = write_info_file(folder_path, metadata)
     return written
-
-
-if __name__ == "__main__":
-    print("ensuring discogs url")
-    parser = argparse.ArgumentParser()
-    parser.add_argument("folder_path")
-    args = parser.parse_args()
-
-    albums_dir = args.folder_path
-    folder_paths = albums_dir_to_folder_paths(albums_dir)
-    for folder_path in folder_paths:
-        ensure_discogs_url(folder_path)
