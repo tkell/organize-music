@@ -1,24 +1,25 @@
+import argparse
 import json
 import os
-import sys
+
+
+from src.organize_music.local_file_io import read_info_file
 
 
 def update_from_existing_json_file(existing_json_file):
     with open(existing_json_file) as f:
         all_tracks_json = json.load(f)
-        for existing in all_tracks_json:
-            image_path = existing["image_path"]
-            folder_path = os.path.dirname(image_path)
-            existing_folders.add(folder_path)
+
+    for existing in all_tracks_json:
+        image_path = existing["image_path"]
+        folder_path = os.path.dirname(image_path)
+        existing_folders.add(folder_path)
     return all_tracks_json, existing_folders
 
 
 def get_album_data(folder_path):
-    info_filepath = os.path.join(folder_path, "info.json")
-    with open(info_filepath, "r") as f:
-        info_dict = json.load(f)
-        release_id = int(info_dict["id"])
-
+    metadata = read_info_file(folder_path)
+    release_id = metadata["id"]
     try:
         print(folder)
         artist = folder.split(" - ")[0].strip()
@@ -76,12 +77,20 @@ def get_cover(folder_files):
 
 if __name__ == "__main__":
     print("starting JSON file construction for digital")
-    albums_dir = sys.argv[1]
+    parser = argparse.ArgumentParser()
+    parser.add_argument("folder_path")
+    parser.add_argument("output_file")
+    parser.add_argument("source_file", default=None)
+    args = parser.parse_args()
+    albums_dir = args.folder_path
+    output_file = args.output_file
+    source_file = args.source_file
 
     all_tracks_json = []
     existing_folders = set()
-    if len(sys.argv) == 3:
-        all_tracks_json, existing_folders = update_from_existing_json_file(sys.argv[2])
+    if source_file:
+        print(f"Loading existing data from {source_file}")
+        all_tracks_json, existing_folders = update_from_existing_json_file(source_file)
 
     folders = os.listdir(albums_dir)
     for folder in folders:
@@ -91,6 +100,7 @@ if __name__ == "__main__":
         if folder_path in existing_folders:
             continue
 
+        print(".", end="")
         artist, title, label, release_id = get_album_data(folder_path)
         tracks = get_tracks(folder_path)
 
@@ -109,5 +119,6 @@ if __name__ == "__main__":
         }
         all_tracks_json.append(json_dict)
 
-    with open("digital.json", "w") as f:
+    all_tracks_json = sorted(all_tracks_json, key=lambda x: (x["artist"], x["title"]))
+    with open(output_file, "w") as f:
         json.dump(all_tracks_json, f)
