@@ -55,6 +55,7 @@ def search_for_release(**kwargs):
 
     done = False
     discogs_json = None
+    all_releases = None
     search_attempt = 0
     while not done:
         try:
@@ -71,7 +72,7 @@ def search_for_release(**kwargs):
             all_releases = discogs_json["results"]
             for index, release in enumerate(all_releases):
                 url = release.get("resource_url", "")
-                if "master/" in url:
+                if "master/" in url or "masters/" in url:
                     continue
                 _print_discogs_releases(index, release)
 
@@ -80,6 +81,9 @@ def search_for_release(**kwargs):
             done = True
         elif action == "n":
             search_attempt += 1
+
+    if not all_releases:
+        raise DiscogsSearchFailed
 
     release = _prompt_and_get_release_details(all_releases)
 
