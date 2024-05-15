@@ -3,7 +3,7 @@ import json
 import os
 import re
 
-from src.discogs.lib_discogs import call_discogs
+from src.discogs.lib_discogs import call_api
 from src.organize_music.local_file_io import read_info_file, write_info_file
 
 if __name__ == "__main__":
@@ -34,7 +34,7 @@ if __name__ == "__main__":
             continue
         discogs_id = discogs_url.split("/")[-1].split("-")[0]
         discogs_api_uri = f"https://api.discogs.com/releases/{discogs_id}"
-        release_data = call_discogs(discogs_api_uri)
+        release_data = call_api(discogs_api_uri)
         year = release_data.get("year", None)
         if not year:
             year_string = release_data.get("released", "")
