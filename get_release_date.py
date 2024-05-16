@@ -21,17 +21,19 @@ if __name__ == "__main__":
         if folder == ".DS_Store" or folder.startswith("."):
             continue
         folder_path = os.path.join(albums_dir, folder)
-        metadata = {}
-        with open(os.path.join(albums_dir, folder, "info.json"), "r") as f:
-            metadata = json.load(f)
+        try:
+            metadata = read_info_file(folder_path)
+        except Exception as e:
+            print(f"Error reading metadata for {folder_path}: {e}")
+            continue
         if "release_year" in metadata:
             continue
-
         discogs_url = metadata.get("discogs_url")
         # Ignore non-discogs for now
         if "discogs.com" not in discogs_url:
             missing += 1
             continue
+
         discogs_id = discogs_url.split("/")[-1].split("-")[0]
         discogs_api_uri = f"https://api.discogs.com/releases/{discogs_id}"
         release_data = call_api(discogs_api_uri)
@@ -45,13 +47,9 @@ if __name__ == "__main__":
         if year:
             print(f"Would be setting release year for {folder_path} to {year}")
             added += 1
-            i = input("Press y to write, n to skip")
-            if i == "y":
-                metadata = read_info_file(folder_path)
-                metadata["release_year"] = year
-                write_info_file(folder_path, metadata)
+            metadata = read_info_file(folder_path)
+            metadata["release_year"] = year
+            write_info_file(folder_path, metadata)
         else:
             print(f"Could not find release year for {folder_path} from Discogs")
             missing += 1
-
-    print(missing, added)
