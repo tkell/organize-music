@@ -7,7 +7,7 @@ from src.discogs.discogs_utils import (
 )
 
 
-def enter_data_manually(track):
+def _enter_data_manually(track):
     release_title = prompt("Enter the title for this release")
     discogs_url = prompt("Enter the discogs url for this release")
     num_tracks = prompt("How many tracks do we have?", int)
@@ -17,7 +17,7 @@ def enter_data_manually(track):
     return release_title, track_numbers, num_tracks, discogs_url
 
 
-def prompt_and_pick_tracks(artist, release_details):
+def _prompt_and_pick_tracks(artist, release_details):
     for index, track in enumerate(release_details["tracklist"]):
         title = track["title"]
         print(f"{index}, {artist}, {title}")
@@ -33,10 +33,10 @@ def prompt_and_pick_tracks(artist, release_details):
     return track_numbers
 
 
-def prompt_and_do_manual_entry(track):
+def _prompt_and_do_manual_entry(track):
     action = prompt("Fall back to manual entry, or skip?, 'e' or 's'?")
     if action == "e":
-        return enter_data_manually(track)
+        return _enter_data_manually(track)
     elif action == "s":
         raise SkipRelease
 
@@ -51,9 +51,9 @@ def group(artist, track, label):
     elif action == "d":
         release_details = search_for_release(artist=artist, track=track, label=label)
         if not release_details or "tracklist" not in release_details:
-            return prompt_and_do_manual_entry(track)
+            return _prompt_and_do_manual_entry(track)
 
-        track_numbers = prompt_and_pick_tracks(artist, release_details)
+        track_numbers = _prompt_and_pick_tracks(artist, release_details)
 
         num_tracks = len(release_details["tracklist"])
         discogs_url = release_details["uri"]
@@ -61,4 +61,4 @@ def group(artist, track, label):
         return release_title, track_numbers, num_tracks, discogs_url
 
     elif action == "e":
-        return enter_data_manually(track)
+        return _enter_data_manually(track)
