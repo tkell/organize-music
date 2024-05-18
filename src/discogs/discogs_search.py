@@ -47,13 +47,11 @@ def _prompt_and_get_release_details(all_releases):
     """Prompt user to select a release and return details."""
     release_number = prompt("Select a release", int)
     release = all_releases[release_number]
-    release_url = release["resource_url"]
-    release_details = lib_discogs.call_api(release_url)
 
-    return release_details
+    return release["resource_url"]
 
 
-def search_for_release(**kwargs):
+def search(**kwargs):
     """
     Search Discogs based on provided artist, album, track, and label.
 
@@ -102,8 +100,9 @@ def search_for_release(**kwargs):
     if not all_releases:
         raise DiscogsSearchFailed
 
-    release = _prompt_and_get_release_details(all_releases)
+    release_api_url = _prompt_and_get_release_details(all_releases)
+    release_details = lib_discogs.call_api(release_api_url)
 
-    return release
+    return release_details
 
 

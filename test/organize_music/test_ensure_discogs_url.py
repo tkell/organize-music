@@ -28,7 +28,7 @@ def test_ensure_discogs_url_writes_when_url_does_not_exist(mocker):
     )
 
     mock_search = mocker.patch(
-        "src.organize_music.ensure_discogs_url.search",
+        "src.organize_music.ensure_discogs_url.search_for_albums",
         return_value="https://www.discogs.com/new_url",
     )
 

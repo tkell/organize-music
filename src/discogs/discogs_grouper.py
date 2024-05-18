@@ -1,4 +1,4 @@
-from src.discogs.discogs_search import search_for_release
+from src.discogs.discogs_search import search
 
 from src.discogs.discogs_utils import (
     SkipRelease,
@@ -49,7 +49,7 @@ def group(artist, track, label):
     elif action == "q":
         raise StopRelease
     elif action == "d":
-        release_details = search_for_release(artist=artist, track=track, label=label)
+        release_details = search(artist=artist, track=track, label=label)
         if not release_details or "tracklist" not in release_details:
             return _prompt_and_do_manual_entry(track)
 

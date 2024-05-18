@@ -1,4 +1,4 @@
-from src.discogs.discogs_search import search_for_release
+from src.discogs.discogs_search import search
 from src.discogs.discogs_utils import SkipRelease, prompt
 
 
@@ -7,9 +7,9 @@ def enter_data_manually():
     return discogs_url
 
 
-def search(artist, album, label):
+def search_for_albums(artist, album, label):
     print(f"about to search for: {artist} - {album} [{label}]")
-    release_details = search_for_release(artist=artist, album=album, label=label)
+    release_details = search(artist=artist, album=album, label=label)
 
     if not release_details:
         action = prompt("Fall back to manual entry, or skip?, 'e' or 's'?")

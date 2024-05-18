@@ -1,6 +1,6 @@
 import os
 
-from src.discogs.discogs_album_search import search
+from src.discogs.discogs_album_search import search_for_albums
 from src.organize_music.local_file_io import read_info_file
 from src.organize_music.local_file_io import write_info_file
 
@@ -26,7 +26,7 @@ def ensure_discogs_url(folder_path):
         return None
 
     artist, release, label = get_album_details(folder_path)
-    discogs_url = search(artist, release, label)
+    discogs_url = search_for_albums(artist, release, label)
     metadata["discogs_url"] = discogs_url
     written = write_info_file(folder_path, metadata)
     return written

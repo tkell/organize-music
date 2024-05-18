@@ -2,7 +2,7 @@ import json
 import os
 import sys
 
-from discogs_album_search import search
+from discogs_album_search import search_for_albums
 
 
 if __name__ == "__main__":
@@ -34,7 +34,7 @@ if __name__ == "__main__":
                 artist = "Various"
             release = release.strip()
             label = label.strip()
-            discogs_url = search(artist, release, label)
+            discogs_url = search_for_albums(artist, release, label)
 
             with open(os.path.join(albums_dir, folder, "info.json"), "r") as f:
                 metadata = json.load(f)
