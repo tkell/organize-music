@@ -81,7 +81,7 @@ def get_release_data(releases):
     data = []
     for release in releases:
         release_url = release["basic_information"]["resource_url"]
-        release_data = call_discogs(release_url)
+        release_data = call_api(release_url)
         data.append((release, release_data))
     return data
 

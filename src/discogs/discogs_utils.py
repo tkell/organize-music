@@ -1,8 +1,5 @@
 import random
 
-import src.discogs.lib_discogs as lib_discogs
-
-
 class SkipRelease(Exception):
     pass
 
