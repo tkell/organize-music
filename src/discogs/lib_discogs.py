@@ -120,7 +120,7 @@ def get_folder_name_and_releases(discogs_folder):
 def download_release_data(album_source_url):
     """
     Download release data from Discogs given a release URL.
-    (The album url path looks like /release/4301112-95-North-Let-Yourself-Go-Remixes)
+    (The album url path looks like /release/4301112-95-North-Let-Go-Remixes)
     """
     album_url = urlparse(album_source_url)
     release_id = album_url.path.split("/")[2].split("-")[0]
