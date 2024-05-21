@@ -6,23 +6,21 @@ from urllib.parse import urlparse
 
 import requests
 
-# Constants
 CACHE_FILENAME = "discogs-cache.pkl"
 USER_AGENT = "DiscogsOrganize +http://tide-pool.ca"
 DISCOGS_TOKEN_FILE = (
     "/Volumes/Bragi/Code/music-collection/organize-music/discogs-token.txt"
 )
 
-# Load token and cache
-with open(DISCOGS_TOKEN_FILE) as f:
-    DISCOGS_TOKEN = f.readline().strip()
-try:
-    with open(CACHE_FILENAME, "rb") as f:
-        DISCOGS_CACHE = pickle.load(f)
-except Exception:
-    with open(CACHE_FILENAME, "wb") as f:
-        pickle.dump({}, f)
-        DISCOGS_CACHE = {}
+
+def _load_cache(cache_filename):
+    try:
+        with open(cache_filename, "rb") as f:
+            return pickle.load(f)
+    except FileNotFoundError:
+        with open(cache_filename, "wb") as f:
+            pickle.dump({}, f)
+            return {}
 
 
 def _get_cache_expiry():
@@ -31,14 +29,41 @@ def _get_cache_expiry():
     return 60 * 60 * 24 * days
 
 
-def _call_discogs_api(url, is_retry=False):
-    """Make a request to the Discogs API with error handling and retries."""
+def _read_cache(url):
+    if url in DISCOGS_CACHE:
+        return DISCOGS_CACHE[url]
+    else:
+        return None
+
+
+def _write_cache(url, timestamp, json_data):
+    DISCOGS_CACHE[url] = (json_data, timestamp)
+    with open(CACHE_FILENAME, "wb") as f:
+        pickle.dump(DISCOGS_CACHE, f)
+
+
+def _load_token(token_filename):
+    with open(token_filename) as f:
+        return f.readline().strip()
+
+
+def _make_call(url):
+    """Wrapper around requests to make testing easier."""
     headers = {
         "user-agent": USER_AGENT,
         "Authorization": f"Discogs token={DISCOGS_TOKEN}",
     }
-    r = requests.get(url, headers=headers)
+    return requests.get(url, headers=headers)
 
+
+# Load token and cache
+DISCOGS_CACHE = _load_cache(CACHE_FILENAME)
+DISCOGS_TOKEN = _load_token(DISCOGS_TOKEN_FILE)
+
+
+def _call_discogs_api(url, is_retry=False):
+    """Make a request to the Discogs API with error handling and retries."""
+    r = _make_call(url)
     time.sleep(random.randint(4, 5))  # Rate limiting
     print("Calling: ", url)
 
@@ -60,8 +85,8 @@ def _call_discogs_api(url, is_retry=False):
 def call_api(url):
     """Call the Discogs API with caching."""
     now = int(time.time())
-    if url in DISCOGS_CACHE:
-        cached_data, timestamp = DISCOGS_CACHE[url]
+    if (cache_contents := _read_cache(url)) is not None:
+        (cached_data, timestamp) = cache_contents
         cache_expiry_seconds = _get_cache_expiry()
         if now - timestamp < cache_expiry_seconds:
             print("Cache hit:", url)
@@ -69,10 +94,7 @@ def call_api(url):
 
     print("Cache miss:", url)
     json_data = _call_discogs_api(url)
-    DISCOGS_CACHE[url] = (json_data, now)
-
-    with open(CACHE_FILENAME, "wb") as f:
-        pickle.dump(DISCOGS_CACHE, f)
+    _write_cache(url, now, json_data)
     return json_data
 
 

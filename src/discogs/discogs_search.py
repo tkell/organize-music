@@ -3,9 +3,10 @@ from itertools import combinations
 
 import src.discogs.lib_discogs as lib_discogs
 
-from src.discogs.discogs_utils import DiscogsSearchFailed, prompt
+from src.discogs.discogs_utils import prompt
 
 BASE_URL = "https://api.discogs.com/database/search?"
+
 
 def _permute_search_terms(all_keys, **kwargs):
     permutations = []
@@ -72,12 +73,10 @@ def search(**kwargs):
     all_releases = None
     search_attempt = 0
     search_urls = build_search_urls(**kwargs)
+
     while not done and search_attempt < len(search_urls):
-        try:
-            url = search_urls[search_attempt]
-            discogs_json = lib_discogs.call_api(url)
-        except DiscogsSearchFailed:
-            break
+        url = search_urls[search_attempt]
+        discogs_json = lib_discogs.call_api(url)
 
         if not discogs_json or len(discogs_json["results"]) == 0:
             search_attempt += 1
@@ -97,12 +96,8 @@ def search(**kwargs):
         elif action == "n":
             search_attempt += 1
 
-    if not all_releases:
-        raise DiscogsSearchFailed
-
-    release_api_url = _prompt_and_get_release_details(all_releases)
-    release_details = lib_discogs.call_api(release_api_url)
-
-    return release_details
-
-
+    if done:
+        release_api_url = _prompt_and_get_release_details(all_releases)
+        return lib_discogs.call_api(release_api_url)
+    else:
+        return None
