@@ -9,6 +9,9 @@ def enter_data_manually():
 
 def search_for_albums(artist, album, label):
     print(f"about to search for: {artist} - {album} [{label}]")
+    action = prompt("Manual entry up front?, 'e'")
+    if action == "e":
+        return enter_data_manually()
     release_details = search(artist=artist, album=album, label=label)
 
     if not release_details:
