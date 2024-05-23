@@ -14,10 +14,14 @@ if __name__ == "__main__":
     for folder in folders:
         if folder.startswith("."):
             continue
+        folder_path = os.path.join(albums_dir, folder)
 
+        try:
+            pass
+
+        except Exception as e:
+            print(f"Error processing {folder_path}: {e}")
 
         count += 1
         if count >= break_after:
             break
-
-
