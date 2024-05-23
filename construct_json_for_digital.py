@@ -80,7 +80,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("folder_path")
     parser.add_argument("output_file")
-    parser.add_argument("source_file", default=None)
+    parser.add_argument("source_file", nargs='?', default=None)
     args = parser.parse_args()
     albums_dir = args.folder_path
     output_file = args.output_file
