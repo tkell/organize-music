@@ -18,18 +18,19 @@ def update_from_existing_json_file(existing_json_file):
 
 
 def get_album_data(folder_path):
-    metadata = read_info_file(folder_path)
-    release_id = metadata["id"]
     try:
+        metadata = read_info_file(folder_path)
+        release_id = metadata["id"]
+        release_year = metadata["release_year"]
         print(folder)
         artist = folder.split(" - ")[0].strip()
         title = folder.split(" - ")[1].split(" [")[0].strip()
         title = title.replace(" : ", " / ")
         label = folder.split(" [")[1][0:-1].strip()
 
-        return artist, title, label, release_id
+        return artist, title, label, release_id, release_year
     except Exception as e:
-        print(folder)
+        print(f"Error in {folder_path}")
         raise e
 
 
@@ -80,7 +81,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("folder_path")
     parser.add_argument("output_file")
-    parser.add_argument("source_file", nargs='?', default=None)
+    parser.add_argument("source_file", nargs="?", default=None)
     args = parser.parse_args()
     albums_dir = args.folder_path
     output_file = args.output_file
@@ -98,10 +99,10 @@ if __name__ == "__main__":
             continue
         folder_path = os.path.join(albums_dir, folder)
         if folder_path in existing_folders:
+            print(".", end="")
             continue
 
-        print(".", end="")
-        artist, title, label, release_id = get_album_data(folder_path)
+        artist, title, label, release_id, release_year = get_album_data(folder_path)
         tracks = get_tracks(folder_path)
 
         folder_files = os.listdir(folder_path)
@@ -116,6 +117,7 @@ if __name__ == "__main__":
             "label": label,
             "tracks": formatted_tracks,
             "image_path": cover_file_path,
+            "year": release_year,
         }
         all_tracks_json.append(json_dict)
 

@@ -6,6 +6,7 @@ import requests
 from lxml import html
 
 from src.discogs.lib_discogs import call_api
+from src.organize_music.ensure_discogs_url import ensure_discogs_url
 from src.organize_music.local_file_io import read_info_file, write_info_file
 
 
@@ -19,6 +20,7 @@ def get_release_year(discogs_url):
         res = re.search(r"\d\d\d\d", year_string)
         if res:
             year = res.group(0)
+
     return year
 
 
@@ -45,6 +47,7 @@ if __name__ == "__main__":
     folders = os.listdir(albums_dir)
 
     for folder in folders:
+        metadata = {}
         if folder == ".DS_Store" or folder.startswith("."):
             continue
         folder_path = os.path.join(albums_dir, folder)
@@ -53,16 +56,25 @@ if __name__ == "__main__":
         except Exception as e:
             print(f"Error reading metadata for {folder_path}: {e}")
             continue
-        if "release_year" in metadata:
+        if "release_year" in metadata.keys():
+            print(".", end="", flush=True)
             continue
 
         discogs_url = metadata.get("discogs_url")
+        if not discogs_url:
+            print(f"missing discogs url for {folder_path}")
+            import sys; sys.exit(1)
         year = None
         if "discogs.com" in discogs_url:
-            continue
             year = get_release_year(discogs_url)
+            if not year:
+                print("missing release year from discogs, find an new discogs url")
+                del metadata["discogs_url"]
+                write_info_file(folder_path, metadata)
+                # panic and re-run!
+                ensure_discogs_url(folder_path)
+
         elif "bandcamp.com" in discogs_url:
-            continue
             year = get_release_year_from_bandcamp(discogs_url)
         else:
             print(f"got some Real Jazz for:  {folder_path}, {discogs_url}")
