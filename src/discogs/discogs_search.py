@@ -33,7 +33,7 @@ def build_search_urls(**kwargs):
     return urls
 
 
-def _print_discogs_releases(index, release):
+def _print_discogs_release(index, release):
     label = release.get("label", "label missing")
     catno = release.get("catno", "catno missing")
     title = release.get("title", "title missing")
@@ -88,7 +88,7 @@ def search(**kwargs):
                 url = release.get("resource_url", "")
                 if "master/" in url or "masters/" in url:
                     continue
-                _print_discogs_releases(index, release)
+                _print_discogs_release(index, release)
 
         action = prompt("A good search? 'y' or 'n'?")
         if action == "y":
