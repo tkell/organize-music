@@ -37,19 +37,38 @@ def _print_discogs_release(index, release):
     label = release.get("label", "label missing")
     catno = release.get("catno", "catno missing")
     title = release.get("title", "title missing")
+    title_str = f"{title} - {label} {catno}"
+
     year = release.get("year", "year missing")
     released = release.get("released", "released missing")
+    year_str = f"{year} or {released}"
 
-    discogs_url = release.get("resource_url", "no resource_url")
-    print(f"{index}: {title} - {label} {catno} -- {year} or {released}; {discogs_url}")
+    release_format = release.get("format", "no format")
+
+    print(f"{index}: {title_str} -- {year_str}; {release_format}")
 
 
-def _prompt_and_get_release_details(all_releases):
+def _prompt_and_get_release_details(good_releases):
     """Prompt user to select a release and return details."""
     release_number = prompt("Select a release", int)
-    release = all_releases[release_number]
+    release = good_releases[release_number]
 
     return release["resource_url"]
+
+
+def sort_and_filter_releases(all_releases):
+    good_releases = []
+    for release in all_releases:
+        if "master/" in release["resource_url"]:
+            continue
+        if not release.get("year", None):
+            continue
+        if "spacer.gif" in release.get("cover_image", ""):
+            continue
+
+        good_releases.append(release)
+
+    return sorted(good_releases, key=lambda x: x["year"])
 
 
 def search(**kwargs):
@@ -84,10 +103,8 @@ def search(**kwargs):
         else:
             print("Found releases from this search:")
             all_releases = discogs_json["results"]
-            for index, release in enumerate(all_releases):
-                url = release.get("resource_url", "")
-                if "master/" in url or "masters/" in url:
-                    continue
+            good_releases = sort_and_filter_releases(all_releases)
+            for index, release in enumerate(good_releases):
                 _print_discogs_release(index, release)
 
         action = prompt("A good search? 'y' or 'n'?")
@@ -97,7 +114,7 @@ def search(**kwargs):
             search_attempt += 1
 
     if done:
-        release_api_url = _prompt_and_get_release_details(all_releases)
+        release_api_url = _prompt_and_get_release_details(good_releases)
         return lib_discogs.call_api(release_api_url)
     else:
         return None
