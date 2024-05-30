@@ -1,4 +1,5 @@
 import argparse
+from datetime import datetime
 
 from src.organize_music.local_file_io import albums_dir_to_folder_paths
 from src.organize_music.add_info_file import add_id_to_folder
@@ -13,10 +14,11 @@ if __name__ == "__main__":
     args = parser.parse_args()
     albums_dir = args.folder_path
     folder_paths = albums_dir_to_folder_paths(albums_dir)
+    today_string = datetime.now().strftime("%Y-%m-%d")
 
-    print("Adding info file and IDs")
+    print("Adding info file, IDs, and purchase date")
     for folder_path in folder_paths:
-        add_id_to_folder(folder_path)
+        add_id_to_folder(folder_path, today_string)
 
     print("Ensuring discogs urls")
     for folder_path in folder_paths:
