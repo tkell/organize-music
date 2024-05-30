@@ -84,8 +84,10 @@ def search(**kwargs):
     Returns:
         discogs release details, as a dict
     """
-    kwargs["release_title"] = kwargs.get("album", "")
-    del kwargs["album"]
+    if "album" in kwargs:
+        kwargs["release_title"] = kwargs.get("album", "")
+        del kwargs["album"]
+    
 
     done = False
     discogs_json = None

@@ -22,7 +22,6 @@ def get_album_data(folder_path):
         metadata = read_info_file(folder_path)
         release_id = metadata["id"]
         release_year = metadata["release_year"]
-        print(folder)
         artist = folder.split(" - ")[0].strip()
         title = folder.split(" - ")[1].split(" [")[0].strip()
         title = title.replace(" : ", " / ")
@@ -103,6 +102,7 @@ if __name__ == "__main__":
             continue
 
         artist, title, label, release_id, release_year = get_album_data(folder_path)
+        print(folder_path)
         tracks = get_tracks(folder_path)
 
         folder_files = os.listdir(folder_path)
