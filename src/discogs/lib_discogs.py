@@ -82,6 +82,11 @@ def _call_discogs_api(url, is_retry=False):
     return result
 
 
+def call_api_no_cache(url):
+    """Call the Discogs API without caching."""
+    return _call_discogs_api(url)
+
+
 def call_api(url):
     """Call the Discogs API with caching."""
     now = int(time.time())

@@ -65,7 +65,7 @@ if __name__ == "__main__":
 
     # call collection by folder
     url = "https://api.discogs.com/users/tkell/collection/folders"
-    collection = lib_discogs.call_discogs_no_cache(url)
+    collection = lib_discogs.call_api_no_cache(url)
 
     # make and write strings
     all_json_data = []
