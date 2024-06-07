@@ -3,6 +3,7 @@ from src.organize_music.add_info_file import add_id_to_folder, _get_id_from_fold
 
 def test_add_id_to_folder_new_id(mocker):
     # Given
+    today_string = "2020-01-01"
     folder_path = "/path/to/my/album"
     existing_metadata = {"discogs_url": "https://www.discogs.com/release/12345678"}
     mock_read_info_file = mocker.patch(
@@ -14,12 +15,13 @@ def test_add_id_to_folder_new_id(mocker):
     )
 
     # When
-    add_id_to_folder(folder_path)
+    add_id_to_folder(folder_path, today_string)
 
     # Then
     expected_id = _get_id_from_folder(folder_path)
     expected_metadata = {
         "discogs_url": "https://www.discogs.com/release/12345678",
+        "purchase_date": today_string,
         "id": expected_id,
     }
     mock_read_info_file.assert_called_once_with(folder_path)
