@@ -12,7 +12,6 @@ def normalize(name):
 
 
 def to_datetime(date_string):
-    # Remove 'GMT' from the string
     return datetime.datetime.strptime(date_string, "%Y-%m-%dT%H:%M:%S%z")
 
 
