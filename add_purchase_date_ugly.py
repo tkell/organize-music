@@ -2,7 +2,7 @@ import argparse
 import os
 import json
 import re
-import datetime
+from datetime import datetime
 import difflib
 
 from src.organize_music.local_file_io import read_info_file, write_info_file
@@ -19,7 +19,7 @@ def to_datetime(date_string):
     date_formats = ["%d %b %Y %H:%M:%S", "%Y-%m-%dT%H:%M:%S%z", "%B %d, %Y"]
     for format in date_formats:
         try:
-            return datetime.datetime.strptime(date_string, format)
+            return datetime.strptime(date_string, format)
         except ValueError:
             pass
     print(f"Could not parse date: {date_string}")
@@ -86,7 +86,30 @@ if __name__ == "__main__":
                 print(".", end="", flush=True)
                 continue
             else:
-                missing += 1
+                release_date = metadata["release_year"]
+                discogs_url = metadata["discogs_url"]
+                print("\n")
+                print(f"Missing purchase date for {folder}")
+                print(f"Release year: {release_date}")
+                print(f"Discogs url: {discogs_url}")
+
+                print("'s' to skip, 'm' for manual entry, 'r' fo release-date-plus")
+                action = input().strip()
+                if action == "s":
+                    continue
+                elif action == "m":
+                    print("Enter purchase date:")
+                    purchase_date = input().strip()
+                    if re.match(r"\d{4}-\d{2}-\d{2}", purchase_date):
+                        metadata["purchase_date"] = purchase_date
+                        write_info_file(folder_path, metadata)
+                    else:
+                        print("Wrong date format, we want yyyy-mm-dd - drive thru!")
+                        continue
+                elif action == "r":
+                    purchase_date = f"{release_date}-04-01"
+                    metadata["purchase_date"] = purchase_date
+                    write_info_file(folder_path, metadata)
 
         except Exception as e:
             print(f"Error processing {folder_path}: {e}")
