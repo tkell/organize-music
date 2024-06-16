@@ -56,6 +56,14 @@ def get_all_possibilities(normalized, lookups):
     return results
 
 
+def get_tracks_from_folder(folder_path):
+    release_files = os.listdir(folder_path)
+    extensions = ["flac", "mp3", "wav", "m4a", "ogg"]
+
+    tracks = [rf for rf in release_files if rf.split(".")[-1] in extensions]
+    return tracks
+
+
 if __name__ == "__main__":
     bc_lookup = make_lookup_dict("crawlers/bandcamp_purchases.json")
     bp_lookup = make_lookup_dict("crawlers/beatport_purchases.json")
@@ -78,22 +86,32 @@ if __name__ == "__main__":
         if folder.startswith(".") or folder[0].lower() < start_from[0]:
             continue
         folder_path = os.path.join(albums_dir, folder)
-
         try:
             metadata = read_info_file(folder_path)
             if "purchase_date" in metadata:
                 print(".", end="", flush=True)
                 continue
 
+            res = []
+            tracks = get_tracks_from_folder(folder_path)
             artist_and_title = folder.split("[")[0]
+            artist = artist_and_title.split("-")[0].strip()
             normalized = normalize(artist_and_title)
-            res = get_all_possibilities(normalized, lookups)
+            res.extend(get_all_possibilities(normalized, lookups))
+
+            for track_file in tracks:
+                track_name = track_file.split(".")[0]
+                normalized_track = normalize(artist + track_name)
+                res.extend(get_all_possibilities(normalized_track, lookups))
 
             if not res:
-                print("x", end="", flush=True)
+                print("x")
                 continue
 
-            print("\n~~~~~~")
+            print(
+                f"\n{folder_path}, with release date {metadata['release_year']}, and tracks ..."
+            )
+            print(tracks)
             purchase = None
             for source, possibilities in res:
                 print(f"Got potentials for {folder_path} from {source}")
