@@ -92,8 +92,10 @@ if __name__ == "__main__":
                 print(f"Missing purchase date for {folder}")
                 print(f"Release year: {release_date}")
                 print(f"Discogs url: {discogs_url}")
+                tracks = os.listdir(folder_path)
+                print(f"Tracks: {tracks}")
 
-                print("'s' to skip, 'm' for manual entry, 'r' fo release-date-plus")
+                print("'s' to skip, 'm' for manual entry, 'r' for release-date-plus")
                 action = input().strip()
                 if action == "s":
                     continue
@@ -101,7 +103,7 @@ if __name__ == "__main__":
                     print("Enter purchase date:")
                     purchase_date = input().strip()
                     if re.match(r"\d{4}-\d{2}-\d{2}", purchase_date):
-                        metadata["purchase_date"] = purchase_date
+                        metadata["purchase_date"] = purchase_date.strip()
                         write_info_file(folder_path, metadata)
                     else:
                         print("Wrong date format, we want yyyy-mm-dd - drive thru!")
