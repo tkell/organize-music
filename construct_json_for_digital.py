@@ -22,12 +22,13 @@ def get_album_data(folder_path):
         metadata = read_info_file(folder_path)
         release_id = metadata["id"]
         release_year = metadata["release_year"]
+        purchase_date = metadata["purchase_date"]
         artist = folder.split(" - ")[0].strip()
         title = folder.split(" - ")[1].split(" [")[0].strip()
         title = title.replace(" : ", " / ")
         label = folder.split(" [")[1][0:-1].strip()
 
-        return artist, title, label, release_id, release_year
+        return artist, title, label, release_id, release_year, purchase_date
     except Exception as e:
         print(f"Error in {folder_path}")
         raise e
@@ -101,7 +102,9 @@ if __name__ == "__main__":
             print(".", end="")
             continue
 
-        artist, title, label, release_id, release_year = get_album_data(folder_path)
+        artist, title, label, release_id, release_year, purchase_date = get_album_data(
+            folder_path
+        )
         print(folder_path)
         tracks = get_tracks(folder_path)
 
@@ -118,6 +121,7 @@ if __name__ == "__main__":
             "tracks": formatted_tracks,
             "image_path": cover_file_path,
             "year": release_year,
+            "purchase_date": purchase_date,
         }
         all_tracks_json.append(json_dict)
 
