@@ -15,6 +15,8 @@ def make_release_string(release):
 
 
 def make_release_json(release, folder_name):
+    date_added = release["date_added"]
+    date_added = date_added.split("T")[0]
     return {
         "id": release["id"],
         "title": release["basic_information"]["title"],
@@ -22,6 +24,7 @@ def make_release_json(release, folder_name):
         "label": release["basic_information"]["labels"][0]["name"],
         "catno": release["basic_information"]["labels"][0]["catno"],
         "year": release["basic_information"]["year"],
+        "purchase_date": date_added,
         "cover_image": release["basic_information"]["cover_image"],
         "folder": folder_name,
     }
