@@ -14,9 +14,21 @@ def make_release_string(release):
     return release_string
 
 
-def make_release_json(release, folder_name):
+def get_purchase_date(release):
     date_added = release["date_added"]
     date_added = date_added.split("T")[0]
+    if "notes" not in release:
+        return date_added
+
+    purchase_date_notes = [note for note in release["notes"] if note["field_id"] == 4]
+    if purchase_date_notes:
+        return purchase_date_notes[0]["value"]
+    else:
+        return date_added
+
+
+def make_release_json(release, folder_name):
+    purchase_date = get_purchase_date(release)
     return {
         "id": release["id"],
         "title": release["basic_information"]["title"],
@@ -24,7 +36,7 @@ def make_release_json(release, folder_name):
         "label": release["basic_information"]["labels"][0]["name"],
         "catno": release["basic_information"]["labels"][0]["catno"],
         "year": release["basic_information"]["year"],
-        "purchase_date": date_added,
+        "purchase_date": purchase_date,
         "cover_image": release["basic_information"]["cover_image"],
         "folder": folder_name,
     }
