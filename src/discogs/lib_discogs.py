@@ -6,7 +6,7 @@ from urllib.parse import urlparse
 
 import requests
 
-CACHE_FILENAME = "discogs-cache.pkl"
+CACHE_FILENAME = "/Volumes/Bragi/Code/music-collection/discogs-cache.pkl"
 USER_AGENT = "DiscogsOrganize +http://tide-pool.ca"
 DISCOGS_TOKEN_FILE = (
     "/Volumes/Bragi/Code/music-collection/organize-music/discogs-token.txt"
