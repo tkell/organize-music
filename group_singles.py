@@ -80,7 +80,7 @@ def _handle_and_move_each_file(filename, track_number, artist, label, singles_pa
     old_data = (filename, artist, track, label, extension)
     new_data = (
         release_title,
-        track_numbers[0],
+        track_number,
         num_tracks,
         discogs_url,
     )
