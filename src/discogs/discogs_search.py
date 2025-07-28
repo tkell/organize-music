@@ -59,7 +59,7 @@ def _prompt_and_get_release_details(good_releases):
 def sort_and_filter_releases(all_releases):
     good_releases = []
     for release in all_releases:
-        if "master/" in release["resource_url"]:
+        if "masters/" in release["resource_url"]:
             continue
         if not release.get("year", None):
             continue
@@ -87,7 +87,6 @@ def search(**kwargs):
     if "album" in kwargs:
         kwargs["release_title"] = kwargs.get("album", "")
         del kwargs["album"]
-    
 
     done = False
     discogs_json = None
