@@ -1,8 +1,6 @@
 import argparse
 import json
 import os
-
-
 from src.organize_music.local_file_io import read_info_file
 
 
@@ -95,17 +93,17 @@ if __name__ == "__main__":
 
     folders = os.listdir(albums_dir)
     for folder in folders:
-        if folder == ".DS_Store":
-            continue
         folder_path = os.path.join(albums_dir, folder)
+        if folder == ".DS_Store" or not os.path.isdir(folder_path):
+            continue
         if folder_path in existing_folders:
             print(".", end="")
             continue
 
+        print(folder)
         artist, title, label, release_id, release_year, purchase_date = get_album_data(
             folder_path
         )
-        print(folder_path)
         tracks = get_tracks(folder_path)
 
         folder_files = os.listdir(folder_path)
