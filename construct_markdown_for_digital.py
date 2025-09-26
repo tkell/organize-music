@@ -1,6 +1,5 @@
+import argparse
 import json
-import os
-
 
 def is_audio_file(filename):
     if (
@@ -15,8 +14,12 @@ def is_audio_file(filename):
 
 
 if __name__ == "__main__":
-    print("#Releases")
-    with open("digital.json", "r") as f:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("source_file")
+    args = parser.parse_args()
+    source_file = args.source_file
+
+    with open(source_file, "r") as f:
         releases = json.load(f)
     for release in releases:
         release_string = (
@@ -26,13 +29,3 @@ if __name__ == "__main__":
         for track in release["tracks"]:
             track_string = f"  {track['position']} - {track['title']}"
             print(track_string)
-
-    print("\n" + "#Productions")
-    for filename in os.listdir("/Volumes/Mimir/Productions"):
-        if is_audio_file(filename):
-            print(filename)
-
-    print("\n" + "#Tide Pool")
-    for filename in os.listdir("/Volumes/Mimir/Tide Pool"):
-        if is_audio_file(filename):
-            print(filename)
