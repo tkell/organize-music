@@ -119,6 +119,7 @@ if __name__ == "__main__":
             "tracks": formatted_tracks,
             "image_path": cover_file_path,
             "image_url": f"https://tide-pool.ca/tessellates/digital/images/{release_id}.jpg",
+            "image_url_small": f"https://tide-pool.ca/tessellates/digital/images/{release_id}-small.jpg",
             "year": release_year,
             "purchase_date": purchase_date,
         }
