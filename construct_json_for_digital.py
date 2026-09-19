@@ -1,6 +1,7 @@
 import argparse
 import json
 import os
+from datetime import date
 from src.organize_music.local_file_io import read_info_file
 
 
@@ -81,12 +82,17 @@ if __name__ == "__main__":
     parser.add_argument("output_file")
     parser.add_argument("source_file", nargs="?", default=None)
     args = parser.parse_args()
+
     albums_dir = args.folder_path
     output_file = args.output_file
     source_file = args.source_file
     image_path_folder = source_file.split(".")[0]
 
+    today_str = date.today().isoformat()
+    patch_output_file = f"{today_str}-{output_file}"
+
     all_tracks_json = []
+    new_tracks_json = []
     existing_folders = set()
     if source_file:
         print(f"Loading existing data from {source_file}")
@@ -125,7 +131,13 @@ if __name__ == "__main__":
             "purchase_date": purchase_date,
         }
         all_tracks_json.append(json_dict)
+        new_tracks_json.append(json_dict)
 
     all_tracks_json = sorted(all_tracks_json, key=lambda x: (x["artist"], x["title"]))
+    new_tracks_json = sorted(new_tracks_json, key=lambda x: (x["artist"], x["title"]))
+
     with open(output_file, "w") as f:
         json.dump(all_tracks_json, f)
+
+    with open(patch_output_file, "w") as f:
+        json.dump(new_tracks_json, f)
