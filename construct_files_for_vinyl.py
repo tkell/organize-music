@@ -39,6 +39,7 @@ def make_release_json(release, folder_name):
         "purchase_date": purchase_date,
         "cover_image": release["basic_information"]["cover_image"],
         "image_url": f"https://tide-pool.ca/tessellates/vinyl/images/{release["id"]}.jpg",
+        "image_url_small": f"https://tide-pool.ca/tessellates/vinyl/images/{release["id"]}-small.jpg",
         "folder": folder_name,
     }
 

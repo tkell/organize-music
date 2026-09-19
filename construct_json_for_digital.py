@@ -84,6 +84,7 @@ if __name__ == "__main__":
     albums_dir = args.folder_path
     output_file = args.output_file
     source_file = args.source_file
+    image_path_folder = source_file.split(".")[0]
 
     all_tracks_json = []
     existing_folders = set()
@@ -118,8 +119,8 @@ if __name__ == "__main__":
             "label": label,
             "tracks": formatted_tracks,
             "image_path": cover_file_path,
-            "image_url": f"https://tide-pool.ca/tessellates/digital/images/{release_id}.jpg",
-            "image_url_small": f"https://tide-pool.ca/tessellates/digital/images/{release_id}-small.jpg",
+            "image_url": f"https://tide-pool.ca/tessellates/{image_path_folder}/images/{release_id}.jpg",
+            "image_url_small": f"https://tide-pool.ca/tessellates/{image_path_folder}/images/{release_id}-small.jpg",
             "year": release_year,
             "purchase_date": purchase_date,
         }
